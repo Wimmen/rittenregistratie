@@ -8,7 +8,7 @@ app.http('stream', {
 
   // Haal eventuele connectionId op uit de querystring
   const connectionId = req.query.connectionId;
-  const baseUrl = "https://sanme.azurewebsites.net/api/events/stream";
+  const baseUrl = "https://sanme-gjcwc6f0g9fqcwce.westeurope-01.azurewebsites.net/api/events/stream";
 
   const externalUrl = connectionId
     ? `${baseUrl}?connectionId=${encodeURIComponent(connectionId)}`

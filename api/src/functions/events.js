@@ -7,7 +7,7 @@ app.http('events', {
 
   context.log("Events POST proxy gestart");
 
-  const externalUrl = "https://sanme.azurewebsites.net/api/events";
+  const externalUrl = "https://sanme-gjcwc6f0g9fqcwce.westeurope-01.azurewebsites.net/api/events";
 
   // Haal SWA identity header op
   const principalHeader = req.headers["x-ms-client-principal"];
