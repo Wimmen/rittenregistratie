@@ -1,17 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Vanilla JavaScript App</title>
+    <meta charset="UTF-8">
+    <title>Execute Flow and receive result</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            font-family: monospace;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #events-list {
+            list-style: none;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        #events-list li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-left: 3px solid #007bff;
+            border-radius: 4px;
+            font-size: 13px;
+            word-wrap: break-word;
+        }
+
+        #events-list li.error {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .connection-status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .connection-status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .connection-status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .timestamp {
+            color: #999;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+    </style>
 </head>
-
 <body>
-  <main>
-    <h1>Vanilla JavaScript App</h1>
-  </main>
-</body>
+    <h1>Flow Events Monitor</h1>
 
+    <div class="container">
+        <div class="panel">
+            <h2>Create Event</h2>
+            <form id="event-form">
+                <div class="form-group">
+                    <label for="event-name">Event Name:</label>
+                    <input type="text" id="event-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-version">Version:</label>
+                    <input type="text" id="event-version" value="1.0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-key">Key:</label>
+                    <input type="text" id="event-key" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-user">User</label>
+                    <input type="text" id="event-user" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-data">Data (JSON, optional):</label>
+                    <textarea id="event-data" placeholder='{"key": "value"}'></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-return">Expected return events:</label>
+                    <textarea id="event-return"></textarea>
+                </div>
+
+                <button type="submit" id="submit-btn">Send Event</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Event Stream</h2>
+            <div class="connection-status disconnected" id="connection-status">Disconnected</div>
+            <ul id="events-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        const eventsList = document.getElementById('events-list');
+        const eventForm = document.getElementById('event-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const connectionStatus = document.getElementById('connection-status');
+        const addEvent = event => {
+            addEventToList(`Event received: ${event.type} - ${event.data}`);
+        }
+
+        let connectionId = null;
+        let eventSource = null;
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/.auth/me');
+                const data = await response.json();
+
+                document.getElementById('event-user').value = data.clientPrincipal?.userId ?? '';
+            } catch (error) {
+                console.error('Error loading user info:', error);
+            }
+        }
+
+        loadUserInfo();
+        
+        function addEventToList(message, isError = false) {
+            const li = document.createElement('li');
+            if (isError) {
+                li.classList.add('error');
+            }
+
+            const timestamp = new Date().toLocaleTimeString();
+            const span = document.createElement('span');
+            span.className = 'timestamp';
+            span.textContent = timestamp;
+
+            li.appendChild(span);
+            li.appendChild(document.createTextNode(message));
+            eventsList.insertBefore(li, eventsList.firstChild);
+        }
+
+        function updateConnectionStatus(connected) {
+            if (connected) {
+                connectionStatus.textContent = 'Connected';
+                connectionStatus.className = 'connection-status connected';
+            } else {
+                connectionStatus.textContent = 'Disconnected';
+                connectionStatus.className = 'connection-status disconnected';
+            }
+        }
+
+        function connectToEventStream() {
+            const baseUrl = '/api';
+
+            eventSource = new EventSource(`${baseUrl}/events/stream`);
+
+            eventSource.onopen = function() {
+                updateConnectionStatus(true);
+                addEventToList('Connected to event stream');
+            };
+            
+            eventSource.addEventListener("connection", function(event) {
+                connectionId = event.data;
+                addEventToList(`Connected with connection ID: ${connectionId}`);
+            });
+
+            eventSource.onerror = function(error) {
+                updateConnectionStatus(false);
+                addEventToList('Connection error occurred', true);
+
+                // Attempt to reconnect after 3 seconds
+                setTimeout(() => {
+                    if (eventSource.readyState === EventSource.CLOSED) {
+                        addEventToList('Attempting to reconnect...');
+                        connectToEventStream();
+                    }
+                }, 3000);
+            };
+        }
+
+        eventForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const eventName = document.getElementById('event-name').value;
+            const version = document.getElementById('event-version').value;
+            const key = document.getElementById('event-key').value;
+            const user = document.getElementById('event-user').value;
+            const dataText = document.getElementById('event-data').value;
+            const returnEvents = document.getElementById('event-return').value;
+            
+            if (returnEvents.trim()) {
+                returnEvents.split('\n').forEach(eventName => {
+                    eventSource.addEventListener(eventName, addEvent);
+                })
+            }
+
+            let data = null;
+            if (dataText.trim()) {
+                try {
+                    data = JSON.parse(dataText);
+                } catch (e) {
+                    addEventToList('Invalid JSON in data field', true);
+                    return;
+                }
+            }
+
+            const payload = {
+                connectionId: connectionId,
+                event: eventName,
+                version: version,
+                key: key,
+                user: user || null,
+                data: data
+            };
+
+            submitBtn.disabled = true;
+
+            try {
+                const baseUrl = '/api';
+                const response = await fetch(`${baseUrl}/events`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    addEventToList(`Event sent: ${eventName} - ${JSON.stringify(result)}`);
+                    document.getElementById('event-name').value = '';
+                    document.getElementById('event-data').value = '';
+                } else {
+                    const error = await response.text();
+                    addEventToList(`Failed to send event: ${response.status} - ${error}`, true);
+                }
+            } catch (error) {
+                addEventToList(`Error: ${error.message}`, true);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Connect to event stream on page load
+        connectToEventStream();
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+        });
+    </script>
+</body>
 </html>
