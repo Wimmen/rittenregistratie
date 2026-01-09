@@ -1,6 +1,9 @@
-const fetch = require("node-fetch");
+const { app } = require('@azure/functions');
 
-module.exports = async function (context, req) {
+app.http('stream', {
+  methods: ['GET'],
+  handler: async (req, context) => {
+
   context.log("SSE proxy gestart");
 
   // Haal eventuele connectionId op uit de querystring
@@ -70,4 +73,5 @@ module.exports = async function (context, req) {
   }
 
   pump();
-};
+  }
+});

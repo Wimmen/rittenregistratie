@@ -238,7 +238,7 @@
         function connectToEventStream() {
             const baseUrl = '/api';
 
-            eventSource = new EventSource(`${baseUrl}/events/stream`);
+            eventSource = new EventSource(`${baseUrl}/stream`);
 
             eventSource.onopen = function() {
                 updateConnectionStatus(true);
