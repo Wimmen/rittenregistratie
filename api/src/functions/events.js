@@ -42,10 +42,10 @@ app.http('events', {
 
   context.log(`Externe response status: ${externalResponse.status}`);
   if (externalResponse.status === 200) {
-    const responseJson = await externalResponse.json();
-    context.log(`Response aanwezig: ${!!responseJson}`);
+    const responseText = await externalResponse.text();
+    context.log(`Status: ${responseText}`);
     return {
-      body: responseJson
+      body: responseText
     };
   } else {
     const responseText = await externalResponse.json();
