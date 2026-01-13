@@ -41,32 +41,21 @@ app.http('events', {
   });
 
   context.log(`Externe response status: ${externalResponse.status}`);
-
-  const responseText = await externalResponse.text();
-  context.log(`Response text lengte: ${responseText.length}`);
-
   if (externalResponse.status === 200) {
-    // Stuur response terug naar de client
-    context.res = {
-      status: externalResponse.status,
-      headers: {
-        "Content-Type": externalResponse.headers.get("content-type") || "text/plain"
-      },
-      body: responseText
+    const responseJson = await externalResponse.json();
+    context.log(`Response aanwezig: ${!!responseJson}`);
+    return {
+      body: responseJson
     };
   } else {
+    const responseText = await externalResponse.json();
     context.log(`Response text: ${responseText}`);
     // Stuur response terug naar de client
-    context.res = {
+    return {
       status: externalResponse.status,
-      headers: {
-        "Content-Type": "application/json"
-      },
       body:  {
         error: responseText
       }
     };
   }
-
-  context.log("Response ingesteld, functie events voltooid");
 }});
