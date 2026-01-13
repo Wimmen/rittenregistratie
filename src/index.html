@@ -232,7 +232,7 @@
         }
         
         async function getConnectionId() {
-            const response = await fetch(`${baseUrl}/connections/${key}`);
+            const response = await fetch(`${baseUrl}/connections`);
             connectionId = await response.json();
             
             connectToEventStream();
@@ -300,7 +300,7 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch(`${baseUrl}/events/${key}`, {
+                const response = await fetch(`${baseUrl}/events`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
