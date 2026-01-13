@@ -19,7 +19,7 @@ app.http('events', {
 
   // Forward de body zoals ontvangen
   const body = await req.json();
-  context.log(`Body: ${body}`);
+  context.log(`Body: ${JSON.stringify(body)}`);
 
   // Bouw headers voor de externe API
   const headers = {
