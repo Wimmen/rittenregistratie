@@ -40,14 +40,28 @@ app.http('connections', {
   const responseText = await externalResponse.text();
   context.log(`Response text lengte: ${responseText.length}`);
 
-  // Stuur response terug naar de client
-  context.res = {
-    status: externalResponse.status,
-    headers: {
-      "Content-Type": externalResponse.headers.get("content-type") || "text/plain"
-    },
-    body: responseText
-  };
+  if (externalResponse.status === 200) {
+    // Stuur response terug naar de client
+    context.res = {
+      status: externalResponse.status,
+      headers: {
+        "Content-Type": externalResponse.headers.get("content-type") || "text/plain"
+      },
+      body: responseText
+    };
+  } else {
+    context.log(`Response text: ${responseText}`);
+    // Stuur response terug naar de client
+    context.res = {
+      status: externalResponse.status,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body:  {
+        error: responseText
+      }
+    };
+  }
 
   context.log("Response ingesteld, functie connections voltooid");
 }});
