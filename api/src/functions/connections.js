@@ -11,12 +11,11 @@ app.http('connections', {
 
   // Haal SWA identity header op
   const principalHeader = req.headers["x-ms-client-principal"];
+  context.log(`Principal header aanwezig: ${!!principalHeader}`);
 
   // Haal API-key op (vanuit client of SWA config)
   const apiKey = process.env.EXTERNAL_API_KEY;
-
-  // Forward de body zoals ontvangen
-  const body = req.rawBody;
+  context.log(`API key aanwezig: ${!!apiKey}`);
 
   // Bouw headers voor de externe API
   const headers = {
@@ -27,18 +26,19 @@ app.http('connections', {
     headers["x-ms-client-principal"] = principalHeader;
   }
 
-  if (apiKey) {
-    headers["api-key"] = apiKey;
-  }
+  context.log(`Headers gebouwd: ${Object.keys(headers).join(', ')}`);
 
   // Verstuur POST naar externe backend
+  context.log(`Start fetch naar: ${externalUrl + '/' + apiKey}`);
   const externalResponse = await fetch(externalUrl + '/' + apiKey, {
     method: "GET",
-    headers,
-    body
+    headers
   });
 
+  context.log(`Externe response status: ${externalResponse.status}`);
+
   const responseText = await externalResponse.text();
+  context.log(`Response text lengte: ${responseText.length}`);
 
   // Stuur response terug naar de client
   context.res = {
@@ -48,4 +48,6 @@ app.http('connections', {
     },
     body: responseText
   };
+
+  context.log("Response ingesteld, functie connections voltooid");
 }});
