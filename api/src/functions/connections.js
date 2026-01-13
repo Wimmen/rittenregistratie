@@ -7,7 +7,7 @@ app.http('connections', {
 
   context.log("Connections GET proxy gestart");
 
-  const externalUrl = "https://sanme.azurewebsites.net/api/events";
+  const externalUrl = "https://sanme.azurewebsites.net/api/connections";
 
   // Haal SWA identity header op
   const principalHeader = req.headers["x-ms-client-principal"];
