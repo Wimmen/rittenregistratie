@@ -239,7 +239,7 @@
         }
 
         function connectToEventStream() {
-            eventSource = new EventSource(`${baseUrl}/events/stream?connectionId=${connectionId}`);
+            eventSource = new EventSource(`https://sanme.azurewebsites.net/events/stream?connectionId=${connectionId}`);
 
             eventSource.onopen = function() {
                 updateConnectionStatus(true);
