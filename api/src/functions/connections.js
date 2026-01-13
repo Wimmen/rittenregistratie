@@ -1,11 +1,11 @@
 
 const { app } = require('@azure/functions');
 
-app.http('events', {
-  methods: ['POST'],
+app.http('connections', {
+  methods: ['GET'],
   handler: async (req, context) => {
 
-  context.log("Events POST proxy gestart");
+  context.log("Connections GET proxy gestart");
 
   const externalUrl = "https://sanme.azurewebsites.net/api/events";
 
@@ -27,9 +27,13 @@ app.http('events', {
     headers["x-ms-client-principal"] = principalHeader;
   }
 
+  if (apiKey) {
+    headers["api-key"] = apiKey;
+  }
+
   // Verstuur POST naar externe backend
   const externalResponse = await fetch(externalUrl + '/' + apiKey, {
-    method: "POST",
+    method: "GET",
     headers,
     body
   });

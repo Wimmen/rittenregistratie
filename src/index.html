@@ -154,11 +154,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="event-key">Key:</label>
-                    <input type="text" id="event-key" required>
-                </div>
-
-                <div class="form-group">
                     <label for="event-user">User</label>
                     <input type="text" id="event-user" disabled>
                 </div>
@@ -185,6 +180,7 @@
     </div>
 
     <script>
+        const baseUrl = '/api';
         const eventsList = document.getElementById('events-list');
         const eventForm = document.getElementById('event-form');
         const submitBtn = document.getElementById('submit-btn');
@@ -234,11 +230,16 @@
                 connectionStatus.className = 'connection-status disconnected';
             }
         }
+        
+        async function getConnectionId() {
+            const response = await fetch(`${baseUrl}/connections/${key}`);
+            connectionId = await response.json();
+            
+            connectToEventStream();
+        }
 
         function connectToEventStream() {
-            const baseUrl = '/api';
-
-            eventSource = new EventSource(`${baseUrl}/stream`);
+            eventSource = new EventSource(`${baseUrl}/events/stream?connectionId=${connectionId}`);
 
             eventSource.onopen = function() {
                 updateConnectionStatus(true);
@@ -269,7 +270,6 @@
 
             const eventName = document.getElementById('event-name').value;
             const version = document.getElementById('event-version').value;
-            const key = document.getElementById('event-key').value;
             const user = document.getElementById('event-user').value;
             const dataText = document.getElementById('event-data').value;
             const returnEvents = document.getElementById('event-return').value;
@@ -294,16 +294,13 @@
                 connectionId: connectionId,
                 event: eventName,
                 version: version,
-                key: key,
-                user: user || null,
                 data: data
             };
 
             submitBtn.disabled = true;
 
             try {
-                const baseUrl = '/api';
-                const response = await fetch(`${baseUrl}/events`, {
+                const response = await fetch(`${baseUrl}/events/${key}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -328,7 +325,7 @@
         });
 
         // Connect to event stream on page load
-        connectToEventStream();
+        getConnectionId();
 
         // Clean up on page unload
         window.addEventListener('beforeunload', function() {
