@@ -362,6 +362,8 @@
             const response = await fetch(`${baseUrl}/connections`);
             
             if (response.status === 202) {
+                connectionId = await response.json();
+                connectToEventStream();
                 // New user detected, show modal
                 document.getElementById('new-user-modal').style.display = 'block';
             } else if (response.ok) {

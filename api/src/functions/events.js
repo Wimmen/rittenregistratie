@@ -48,14 +48,12 @@ app.http('events', {
       body: responseText
     };
   } else {
-    const responseText = await externalResponse.json();
+    const responseText = await externalResponse.text();
     context.log(`Response text: ${responseText}`);
     // Stuur response terug naar de client
     return {
       status: externalResponse.status,
-      body:  {
-        error: responseText
-      }
+      body: responseText
     };
   }
 }});
