@@ -387,6 +387,13 @@
                 addEventToList(`Connected with connection ID: ${connectionId}`);
             });
 
+            eventSource.addEventListener("UserCreationSuccess", function(event) {
+                addEventToList(`UserCreationSuccess: ${event}`);
+            });
+            eventSource.addEventListener("UserCreationFailed", function(event) {
+                addEventToList(`UserCreationFailed: ${event}`);
+            });
+
             eventSource.onerror = function(error) {
                 updateConnectionStatus(false);
                 addEventToList('Connection error occurred', true);
