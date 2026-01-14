@@ -90,6 +90,12 @@
             cursor: not-allowed;
         }
 
+        /* Auth UI */
+        #auth-panel { margin: 20px 0; }
+        #logout-btn { background: #dc3545; }
+        #logout-btn:hover { background: #a71d2a; }
+        #user-json { font-family: monospace; font-size: 13px; }
+
         #events-list {
             list-style: none;
             max-height: 600px;
@@ -138,6 +144,17 @@
 </head>
 <body>
     <h1>Flow Events Monitor</h1>
+
+    <div id="auth-panel" class="panel" style="margin-top:12px; margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div id="user-info" style="font-size:14px;color:#333;">Loading user status...</div>
+            <div>
+                <button id="login-btn">Login</button>
+                <button id="logout-btn" style="display:none;margin-left:8px;">Logout</button>
+            </div>
+        </div>
+        <pre id="user-json" style="margin-top:10px;display:none;background:#f8f9fa;padding:10px;border-radius:6px;max-height:200px;overflow:auto;font-family:monospace;font-size:13px;"></pre>
+    </div>
 
     <div class="container">
         <div class="panel">
@@ -195,13 +212,52 @@
         async function loadUserInfo() {
             try {
                 const response = await fetch('/.auth/me');
-                const data = await response.json();
+                let data = null;
 
-                document.getElementById('event-user').value = data.clientPrincipal?.userId ?? '';
+                if (response.ok) {
+                    data = await response.json();
+                }
+
+                // clientPrincipal for Static Web Apps / App Service
+                const cp = data?.clientPrincipal ?? data ?? null;
+
+                // populate event user field
+                document.getElementById('event-user').value = cp?.userId ?? '';
+
+                const loginBtn = document.getElementById('login-btn');
+                const logoutBtn = document.getElementById('logout-btn');
+                const userInfo = document.getElementById('user-info');
+                const userJson = document.getElementById('user-json');
+
+                if (cp && cp.userId) {
+                    // logged in
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-block';
+                    userInfo.textContent = `${cp.userDetails ?? cp.userId} (${cp.identityProvider ?? ''})`;
+                    userJson.textContent = JSON.stringify(cp, null, 2);
+                    userJson.style.display = 'block';
+                } else {
+                    // not logged in
+                    loginBtn.style.display = 'inline-block';
+                    logoutBtn.style.display = 'none';
+                    userInfo.textContent = 'Not logged in';
+                    userJson.style.display = 'none';
+                }
             } catch (error) {
                 console.error('Error loading user info:', error);
             }
         }
+
+        // wire login/logout
+        document.getElementById('login-btn').addEventListener('click', function() {
+            const loginUrl = `/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+            window.location.href = loginUrl;
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            const logoutUrl = `/.auth/logout?post_logout_redirect_uri=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+            window.location.href = logoutUrl;
+        });
 
         loadUserInfo();
         
