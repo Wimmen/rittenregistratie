@@ -10,7 +10,7 @@ app.http('events', {
   const externalUrl = "https://sanme.azurewebsites.net/api/events";
 
   // Haal SWA identity header op
-  const principalHeader = req.headers["x-ms-client-principal"];
+  const principalHeader = req.headers.get("x-ms-client-principal");
   context.log(`Principal header aanwezig: ${!!principalHeader}`);
 
   // Haal API-key op (vanuit client of SWA config)
