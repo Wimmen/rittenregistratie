@@ -36,14 +36,15 @@ app.http('connections', {
   });
 
   context.log(`Externe response status: ${externalResponse.status}`);
-  if (externalResponse.status === 200) {
+  if (externalResponse.status === 200 || externalResponse.status === 202) {
     const responseText = await externalResponse.text();
     context.log(`ConnectionId: ${responseText}`);
     return {
+      status: externalResponse.status,
       body: responseText
     };
   } else {
-    const responseText = await externalResponse.json();
+    const responseText = await externalResponse.text();
     context.log(`Response text: ${responseText}`);
     // Stuur response terug naar de client
     return {
