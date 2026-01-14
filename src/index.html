@@ -467,13 +467,12 @@
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
-            const userId = document.getElementById('event-user').value;
 
             const payload = {
-                connectionId: null,
+                connectionId: connectionId,
                 event: 'CreateUser',
                 version: '1.0',
-                data: { firstName, lastName, email, userId }
+                data: { firstName, lastName, email }
             };
 
             try {
