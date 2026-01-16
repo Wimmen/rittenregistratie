@@ -1,0 +1,65 @@
+{
+    "Id": null,
+    "Name": "RegisterDriveFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "insert-drive-step",
+    "ErrorStepId": "error-to-user-step",
+    "Steps": {
+        "insert-drive-step": {
+            "Id": "insert-drive-step",
+            "Type": "SendDataToDatabase",
+            "Parameters": {
+                "QueryType": "Insert",
+                "QueryTextType": "Text",
+                "Query": "INSERT INTO Drives (DriveDate, FromLocation, ToLocation, Mileage, Distance, Type, UserId, CreatedAt) VALUES (@DriveDate, @FromLocation, @ToLocation, @Mileage, @Distance, @Type, @UserId, getDate())",
+                "Parameters": {
+                    "DriveDate": "{{event.date}}",
+                    "FromLocation": "{{event.from}}",
+                    "ToLocation": "{{event.to}}",
+                    "Mileage": "{{event.mileage}}",
+                    "Distance": "{{event.distance}}",
+                    "Type": "{{event.type}}",
+                    "UserId": "{{principal.userId}}"
+                }
+            },
+            "Alias": "DriveInserted",
+            "NextStepId": "success-to-user-step",
+            "ConnectionId": 0
+        },
+        "success-to-user-step": {
+            "Id": "success-to-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "DriveRegistered",
+                "Data": {
+                    "Message": "Drive Registered Successfully",
+                    "Status": "Success"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-to-user-step": {
+            "Id": "error-to-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "DriveRegistrationFailed",
+                "Data": {
+                    "Message": "Drive Registration Failed",
+                    "Status": "Failed",
+                    "Error": "{{error}}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "RegisterDrive",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[event.date NOT EMPTY, event.from NOT EMPTY, event.to NOT EMPTY, event.mileage NOT EMPTY, principal.userId NOT EMPTY]"
+        }
+    ]
+}

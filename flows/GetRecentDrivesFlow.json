@@ -1,0 +1,56 @@
+{
+    "Id": null,
+    "Name": "GetRecentDrivesFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-drives-step",
+    "ErrorStepId": "error-to-user-step",
+    "Steps": {
+        "get-drives-step": {
+            "Id": "get-drives-step",
+            "Type": "GetDataFromDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT TOP 20 DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Distance as distance, Type as type FROM Drives WHERE UserId = @UserId ORDER BY Mileage DESC",
+                "Parameters": {
+                    "UserId": "{{principal.userId}}"
+                }
+            },
+            "Alias": "RecentDrives",
+            "NextStepId": "send-list-step",
+            "ConnectionId": 0
+        },
+        "send-list-step": {
+            "Id": "send-list-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "RecentDrivesList",
+                "Data": "{{RecentDrives}}"
+            },
+            "NextStepId": null
+        },
+        "error-to-user-step": {
+            "Id": "error-to-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "GetRecentDrivesFailed",
+                "Data": {
+                    "Message": "Failed to retrieve drives",
+                    "Status": "Failed",
+                    "Error": "{{error}}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "GetRecentDrives",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[principal.userId NOT EMPTY]"
+        }
+    ]
+}
