@@ -492,12 +492,9 @@
                 });
 
                 if (response.ok) {
-                    addEventToList('User created successfully');
                     document.getElementById('new-user-modal').style.display = 'none';
                     // Reset form
                     document.getElementById('new-user-form').reset();
-                    // Now get connection ID
-                    getConnectionId();
                 } else {
                     const error = await response.text();
                     addEventToList(`Failed to create user: ${response.status} - ${error}`, true);
