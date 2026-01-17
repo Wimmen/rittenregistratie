@@ -34,7 +34,7 @@
           "MigrationName": "SelectDdlHistoryFlow",
           "Message": "Select query failed",
           "Status": "Failed",
-          "Error": "{{Error}}"
+          "Error": "{{error}}"
         }
       },
       "NextStepId": null

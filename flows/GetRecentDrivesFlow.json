@@ -8,7 +8,7 @@
     "Steps": {
         "get-drives-step": {
             "Id": "get-drives-step",
-            "Type": "GetDataFromDatabase",
+            "Type": "SendDataToDatabase",
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
