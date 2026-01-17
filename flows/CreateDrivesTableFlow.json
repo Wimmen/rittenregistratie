@@ -1,0 +1,64 @@
+{
+    "Id": null,
+    "Name": "CreateDrivesTableFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "create-table-step",
+    "ErrorStepId": "error-to-user-step",
+    "Steps": {
+        "create-table-step": {
+            "Id": "create-table-step",
+            "Type": "SendDataToDatabase",
+            "Parameters": {
+                "Query": "CREATE TABLE Drives (id INT IDENTITY PRIMARY KEY, DriveDate DATETIME2, FromLocation NVARCHAR(255), ToLocation NVARCHAR(255), Mileage INT, Distance INT, Type NVARCHAR(50), UserId NVARCHAR(255), CreatedAt DATETIME2 DEFAULT SYSUTCDATETIME())"
+            },
+            "NextStepId": "insert-migration-step",
+            "ConnectionId": 0
+        },
+        "insert-migration-step": {
+            "Id": "insert-migration-step",
+            "Type": "SendDataToDatabase",
+            "Parameters": {
+                "Query": "INSERT INTO ddl_history (migration_name, status, query) VALUES ('CreateDrivesTableFlow', 'Completed', 'CREATE TABLE Drives (id INT IDENTITY PRIMARY KEY, DriveDate DATETIME2, FromLocation NVARCHAR(255), ToLocation NVARCHAR(255), Mileage INT, Distance INT, Type NVARCHAR(50), UserId NVARCHAR(255), CreatedAt DATETIME2 DEFAULT SYSUTCDATETIME())')"
+            },
+            "NextStepId": "success-to-user-step",
+            "ConnectionId": 0
+        },
+        "success-to-user-step": {
+            "Id": "success-to-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "MigrationCompleted",
+                "Data": {
+                    "MigrationName": "CreateDrivesTableFlow",
+                    "Message": "Migration completed successfully",
+                    "Status": "Completed"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-to-user-step": {
+            "Id": "error-to-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "MigrationFailed",
+                "Data": {
+                    "MigrationName": "CreateDrivesTableFlow",
+                    "Message": "Migration failed",
+                    "Status": "Failed",
+                    "Error": "{{error}}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "RunCreateDrivesTableFlow",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "User.Role = 'admin'"
+        }
+    ]
+}

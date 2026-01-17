@@ -24,7 +24,8 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevent body scroll, handle in main */
+    overflow: hidden;
+    /* Prevent body scroll, handle in main */
 }
 
 /* Authentication Overlay */
@@ -97,8 +98,16 @@ body {
     margin-top: 4px;
     font-weight: 500;
 }
-.connection-pill.connected { background: #dcfce7; color: #166534; }
-.connection-pill.disconnected { background: #fee2e2; color: #991b1b; }
+
+.connection-pill.connected {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.connection-pill.disconnected {
+    background: #fee2e2;
+    color: #991b1b;
+}
 
 .btn-icon {
     background: none;
@@ -112,7 +121,8 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    padding-bottom: 80px; /* Space for bottom nav */
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+    /* Space for bottom nav */
 }
 
 .view {
@@ -125,8 +135,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Forms & Inputs */
@@ -193,10 +210,10 @@ input:focus {
     transition: all 0.2s;
 }
 
-.type-selector input:checked + .type-option {
+.type-selector input:checked+.type-option {
     background: #fff;
     color: var(--primary);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .mileage-card {
@@ -264,7 +281,7 @@ input:focus {
     background: var(--bg-card);
     padding: 16px;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
