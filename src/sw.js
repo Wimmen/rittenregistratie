@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ritten-app-v1';
+const CACHE_NAME = 'ritten-app-v0-1';
 const urlsToCache = [
   './',
   './index.html',
