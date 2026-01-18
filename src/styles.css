@@ -67,7 +67,7 @@ body {
 .app-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: calc(100vh - 66px);
 }
 
 .app-header {
@@ -121,7 +121,6 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    margin-bottom: 66px;
 }
 
 .view {
