@@ -1,10 +1,10 @@
 const CACHE_NAME = 'ritten-app-v0-1';
 const urlsToCache = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js',
-  './manifest.json'
+  // './',
+  // './index.html',
+  // './styles.css',
+  // './app.js',
+  // './manifest.json'
 ];
 
 self.addEventListener('install', event => {
