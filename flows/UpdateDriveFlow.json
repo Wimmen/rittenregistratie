@@ -1,19 +1,20 @@
 {
     "Id": null,
-    "Name": "RegisterDriveFlow",
+    "Name": "UpdateDriveFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "insert-drive-step",
+    "StartStepId": "update-drive-step",
     "ErrorStepId": "error-to-user-step",
     "Steps": {
-        "insert-drive-step": {
-            "Id": "insert-drive-step",
+        "update-drive-step": {
+            "Id": "update-drive-step",
             "Type": "SendDataToDatabase",
             "Parameters": {
-                "QueryType": "Insert",
+                "QueryType": "Update",
                 "QueryTextType": "Text",
-                "Query": "INSERT INTO Drives (DriveDate, FromLocation, ToLocation, Mileage, Distance, Type, UserId, Description, CreatedAt) VALUES (@DriveDate, @FromLocation, @ToLocation, @Mileage, @Distance, @Type, @UserId, @Description, getDate())",
+                "Query": "UPDATE Drives SET DriveDate = @DriveDate, FromLocation = @FromLocation, ToLocation = @ToLocation, Mileage = @Mileage, Distance = @Distance, Type = @Type, Description = @Description WHERE Id = @Id AND UserId = @UserId",
                 "Parameters": {
+                    "Id": "{{event.id}}",
                     "DriveDate": "{{event.date}}",
                     "FromLocation": "{{event.from}}",
                     "ToLocation": "{{event.to}}",
@@ -24,7 +25,7 @@
                     "Description": "{{event.description}}"
                 }
             },
-            "Alias": "DriveInserted",
+            "Alias": "DriveUpdated",
             "NextStepId": "success-to-user-step",
             "ConnectionId": 0
         },
@@ -32,9 +33,9 @@
             "Id": "success-to-user-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "DriveRegistered",
+                "Event": "DriveUpdated",
                 "Data": {
-                    "Message": "Drive Registered Successfully",
+                    "Message": "Drive Updated Successfully",
                     "Status": "Success"
                 }
             },
@@ -44,9 +45,9 @@
             "Id": "error-to-user-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "DriveRegistrationFailed",
+                "Event": "DriveUpdateFailed",
                 "Data": {
-                    "Message": "Drive Registration Failed",
+                    "Message": "Drive Update Failed",
                     "Status": "Failed",
                     "Error": "{{error}}"
                 }
@@ -57,10 +58,10 @@
     "Events": [
         {
             "Id": null,
-            "Name": "RegisterDrive",
+            "Name": "UpdateDrive",
             "Version": "1.0",
             "Status": "Active",
-            "Validation": "[event.date NOT EMPTY, event.from NOT EMPTY, event.to NOT EMPTY, event.mileage NOT EMPTY, principal.userId NOT EMPTY]"
+            "Validation": "[event.id NOT EMPTY, event.date NOT EMPTY, event.from NOT EMPTY, event.to NOT EMPTY, event.mileage NOT EMPTY, principal.userId NOT EMPTY]"
         }
     ]
 }

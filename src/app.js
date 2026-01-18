@@ -7,7 +7,8 @@ let state = {
     lastMileage: 0,
     recentDrives: [],
     addresses: new Set(),
-    connected: false
+    connected: false,
+    editingId: null
 };
 
 // Constants
@@ -146,18 +147,18 @@ function connectSSE() {
     });
 
     eventSource.addEventListener('DriveRegistered', (e) => {
-        // Success notification?
-        // Refresh list
-        requestInitialData();
-        driveForm.reset();
-        document.getElementById('date').valueAsDate = new Date();
-        document.querySelector('.loader').classList.add('hidden');
-        document.querySelector('.btn-text').textContent = 'Rit Opslaan';
-        document.getElementById('save-btn').disabled = false;
-
-        // Show simple toast or alert?
-        alert('Rit succesvol opgeslagen!');
+        handleSuccess('Rit succesvol opgeslagen!');
     });
+
+    eventSource.addEventListener('DriveUpdated', (e) => {
+        handleSuccess('Rit succesvol bijgewerkt!');
+    });
+
+    function handleSuccess(msg) {
+        requestInitialData();
+        resetForm();
+        alert(msg);
+    }
 
     eventSource.onerror = () => {
         updateConnectionStatus(false);
@@ -227,12 +228,21 @@ function renderDrivesList(drives) {
     drives.forEach(drive => {
         const el = document.createElement('div');
         el.className = 'drive-item';
+        el.onclick = () => editDrive(drive); // Simple edit trigger
+
+        // Add description if exists
+        const descHtml = drive.description ? `<div class="drive-desc">${drive.description}</div>` : '';
+
         el.innerHTML = `
             <div class="drive-main">
                 <span class="drive-route">${drive.from} ➝ ${drive.to}</span>
                 <span class="drive-meta">${formatDate(drive.date)} • ${drive.type}</span>
+                ${descHtml}
             </div>
-            <span class="drive-distance">${drive.distance} km</span>
+            <div class="drive-right">
+                <span class="drive-distance">${drive.distance} km</span>
+                <span class="edit-icon">✎</span>
+            </div>
         `;
         drivesListContainer.appendChild(el);
     });
@@ -252,6 +262,37 @@ function formatDate(dateStr) {
         const d = new Date(dateStr);
         return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
     } catch (e) { return dateStr; }
+}
+
+function editDrive(drive) {
+    state.editingId = drive.id;
+
+    // Fill form
+    document.getElementById('date').value = drive.date.split('T')[0];
+    document.getElementById('from').value = drive.from;
+    document.getElementById('to').value = drive.to;
+    document.getElementById('current-mileage').value = drive.mileage;
+    document.getElementById('description').value = drive.description || '';
+
+    if (drive.type === 'Zakelijk') document.getElementById('type-business').checked = true;
+    else document.getElementById('type-private').checked = true;
+
+    updateCalculatedDistance();
+
+    // UI Update
+    document.querySelector('.btn-text').textContent = 'Rit Bijwerken';
+
+    // Switch view
+    navItems[0].click(); // Go to 'New' tab
+}
+
+function resetForm() {
+    state.editingId = null;
+    driveForm.reset();
+    document.getElementById('date').valueAsDate = new Date();
+    document.querySelector('.btn-text').textContent = 'Rit Opslaan';
+    document.querySelector('.loader').classList.add('hidden');
+    document.getElementById('save-btn').disabled = false;
 }
 
 // Form Logic
@@ -278,22 +319,25 @@ function setupForm() {
         const dist = currentMileage - state.lastMileage;
 
         const payload = {
+            id: state.editingId, // Include ID if editing
             date: document.getElementById('date').value,
             type: document.querySelector('input[name="type"]:checked').value,
             from: document.getElementById('from').value,
             to: document.getElementById('to').value,
             mileage: currentMileage,
-            distance: dist
+            distance: dist,
+            description: document.getElementById('description').value
         };
 
-        await sendEvent('RegisterDrive', payload);
+        const eventName = state.editingId ? 'UpdateDrive' : 'RegisterDrive';
+        await sendEvent(eventName, payload);
 
         // Timeout override if no response
         setTimeout(() => {
             if (btn.disabled) {
                 btn.disabled = false;
-                text.textContent = 'Rit Opslaan';
                 loader.classList.add('hidden');
+                // Don't reset text here, it depends on state
             }
         }, 5000);
     });
