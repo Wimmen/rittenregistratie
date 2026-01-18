@@ -225,10 +225,10 @@ function renderDrivesList(drives) {
         return;
     }
 
-    drives.forEach(drive => {
+    drives.forEach((drive, index) => {
         const el = document.createElement('div');
         el.className = 'drive-item';
-        el.onclick = () => editDrive(drive); // Simple edit trigger
+        el.onclick = () => editDrive(drive, index); // Simple edit trigger
 
         // Add description if exists
         const descHtml = drive.description ? `<div class="drive-desc">${drive.description}</div>` : '';
@@ -264,13 +264,15 @@ function formatDate(dateStr) {
     } catch (e) { return dateStr; }
 }
 
-function editDrive(drive) {
+function editDrive(drive, index) {
     state.editingId = drive.id;
+    state.lastMileage = sortedDrives.length > index + 1 ? sortedDrives[index + 1].mileage : 0;
 
     // Fill form
     document.getElementById('date').value = drive.date.split('T')[0];
     document.getElementById('from').value = drive.from;
     document.getElementById('to').value = drive.to;
+    document.getElementById('prev-mileage').value = state.lastMileage;
     document.getElementById('current-mileage').value = drive.mileage;
     document.getElementById('description').value = drive.description || '';
 
@@ -343,9 +345,9 @@ function setupForm() {
     });
 }
 
-function updateCalculatedDistance() {
+function updateCalculatedDistance(lastMileage) {
     const current = parseInt(currentMileageInput.value) || 0;
-    const dist = Math.max(0, current - state.lastMileage);
+    const dist = Math.max(0, current - lastMileage);
     calculatedDistanceEl.textContent = dist + ' km';
 }
 
