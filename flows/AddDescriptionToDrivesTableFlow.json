@@ -46,7 +46,7 @@
                     "MigrationName": "AddDescriptionToDrivesTableFlow",
                     "Message": "Migration failed",
                     "Status": "Failed",
-                    "Error": "{{error}}"
+                    "Error": "${error}"
                 }
             },
             "NextStepId": null

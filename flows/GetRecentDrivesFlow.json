@@ -14,7 +14,7 @@
                 "QueryTextType": "Text",
                 "Query": "SELECT TOP 20 Id as id, DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Distance as distance, Type as type, Description as description FROM Drives WHERE UserId = @UserId ORDER BY Mileage DESC",
                 "Parameters": {
-                    "UserId": "{{principal.userId}}"
+                    "UserId": "${principal.userId}"
                 }
             },
             "Alias": "RecentDrives",
@@ -26,7 +26,7 @@
             "Type": "SendMessageToUser",
             "Parameters": {
                 "Event": "RecentDrivesList",
-                "Data": "{{RecentDrives}}"
+                "Data": "${RecentDrives}"
             },
             "NextStepId": null
         },
@@ -38,7 +38,7 @@
                 "Data": {
                     "Message": "Failed to retrieve drives",
                     "Status": "Failed",
-                    "Error": "{{error}}"
+                    "Error": "${error}"
                 }
             },
             "NextStepId": null

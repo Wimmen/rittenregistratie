@@ -14,10 +14,10 @@
         "QueryTextType": "Text",
         "Query": "INSERT INTO Users (FirstName, LastName, Email, Role, LastLogin, Oid, Disabled) VALUES (@FirstName, @LastName, @Email, 'User', getDate(), @Oid, 0)",
         "Parameters": {
-          "FirstName": "{{event.firstName}}",
-          "LastName": "{{event.lastName}}",
-          "Email": "{{event.email}}",
-          "Oid": "{{principal.userId}}"
+          "FirstName": "${event.firstName}",
+          "LastName": "${event.lastName}",
+          "Email": "${event.email}",
+          "Oid": "${principal.userId}"
         }
       },
       "Alias": "Created",
@@ -44,7 +44,7 @@
         "Data": {
           "Message": "User Creation Failed",
           "Status": "Failed",
-          "Error": "{{error}}"
+          "Error": "${error}"
         }
       },
       "NextStepId": null

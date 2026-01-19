@@ -44,8 +44,9 @@
         "Event": "MigrationCompleted",
         "Data": {
           "MigrationName": "CreateDdlHistoryTableFlow",
-          "Message": "Migration completed successfully",
-          "Status": "Completed"
+          "Message": "Migration failed",
+          "Status": "Failed",
+          "Error": "${error}"
         }
       },
       "NextStepId": null

@@ -14,15 +14,15 @@
                 "QueryTextType": "Text",
                 "Query": "UPDATE Drives SET DriveDate = @DriveDate, FromLocation = @FromLocation, ToLocation = @ToLocation, Mileage = @Mileage, Distance = @Distance, Type = @Type, Description = @Description WHERE Id = @Id AND UserId = @UserId",
                 "Parameters": {
-                    "Id": "{{event.id}}",
-                    "DriveDate": "{{event.date}}",
-                    "FromLocation": "{{event.from}}",
-                    "ToLocation": "{{event.to}}",
-                    "Mileage": "{{event.mileage}}",
-                    "Distance": "{{event.distance}}",
-                    "Type": "{{event.type}}",
-                    "UserId": "{{principal.userId}}",
-                    "Description": "{{event.description}}"
+                    "Id": "${event.id}",
+                    "DriveDate": "${event.date}",
+                    "FromLocation": "${event.from}",
+                    "ToLocation": "${event.to}",
+                    "Mileage": "${event.mileage}",
+                    "Distance": "${event.distance}",
+                    "Type": "${event.type}",
+                    "UserId": "${principal.userId}",
+                    "Description": "${event.description}"
                 }
             },
             "Alias": "DriveUpdated",
@@ -49,7 +49,7 @@
                 "Data": {
                     "Message": "Drive Update Failed",
                     "Status": "Failed",
-                    "Error": "{{error}}"
+                    "Error": "${error}"
                 }
             },
             "NextStepId": null

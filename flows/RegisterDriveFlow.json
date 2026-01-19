@@ -14,14 +14,14 @@
                 "QueryTextType": "Text",
                 "Query": "INSERT INTO Drives (DriveDate, FromLocation, ToLocation, Mileage, Distance, Type, UserId, Description, CreatedAt) VALUES (@DriveDate, @FromLocation, @ToLocation, @Mileage, @Distance, @Type, @UserId, @Description, getDate())",
                 "Parameters": {
-                    "DriveDate": "{{event.date}}",
-                    "FromLocation": "{{event.from}}",
-                    "ToLocation": "{{event.to}}",
-                    "Mileage": "{{event.mileage}}",
-                    "Distance": "{{event.distance}}",
-                    "Type": "{{event.type}}",
-                    "UserId": "{{principal.userId}}",
-                    "Description": "{{event.description}}"
+                    "DriveDate": "${event.date}",
+                    "FromLocation": "${event.from}",
+                    "ToLocation": "${event.to}",
+                    "Mileage": "${event.mileage}",
+                    "Distance": "${event.distance}",
+                    "Type": "${event.type}",
+                    "UserId": "${principal.userId}",
+                    "Description": "${event.description}"
                 }
             },
             "Alias": "DriveInserted",
@@ -48,7 +48,7 @@
                 "Data": {
                     "Message": "Drive Registration Failed",
                     "Status": "Failed",
-                    "Error": "{{error}}"
+                    "Error": "${error}"
                 }
             },
             "NextStepId": null
