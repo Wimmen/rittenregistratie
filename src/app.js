@@ -242,6 +242,8 @@ function requestInitialData() {
     // We trigger a flow that returns the list of drives
     // Ideally this flow "GetRecentDrives" is triggered by an event
     sendEvent('GetRecentDrives', {});
+    sendEvent('GetUser', {});
+    sendEvent('GetCar', {});
 }
 
 function handleRecentDrives(drives) {
