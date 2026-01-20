@@ -8,7 +8,8 @@ let state = {
     recentDrives: [],
     addresses: new Set(),
     connected: false,
-    editingId: null
+    editingId: null,
+    car: { brand: '', licensePlate: '' }
 };
 
 // Constants
@@ -29,6 +30,14 @@ const currentMileageInput = document.getElementById('current-mileage');
 const calculatedDistanceEl = document.getElementById('calculated-distance');
 const addressList = document.getElementById('address-list');
 const drivesListContainer = document.getElementById('drives-list');
+
+// Profile Elements
+const profileName = document.getElementById('profile-name');
+const profileEmail = document.getElementById('profile-email');
+const profileInitials = document.getElementById('profile-initials');
+const carForm = document.getElementById('car-form');
+const carBrandInput = document.getElementById('car-brand');
+const carLicenseInput = document.getElementById('car-license');
 
 // Init
 async function init() {
@@ -121,7 +130,14 @@ async function initConnection() {
         if (res.ok || res.status === 202) {
             state.connectionId = await res.json();
             connectSSE();
-            requestInitialData();
+
+            // If 202, it means we are connected but maybe first time setup is needed or we want to force profile check
+            // Requirement: "When a 202 is received... tab should become active and user created"
+            if (res.status === 202) {
+                handleNewConnection();
+            } else {
+                requestInitialData();
+            }
         } else {
             console.error('Connection failed', res);
             updateConnectionStatus(false);
@@ -157,6 +173,30 @@ function connectSSE() {
 
     eventSource.addEventListener('DriveUpdated', (e) => {
         handleSuccess('Rit succesvol bijgewerkt!');
+    });
+
+    eventSource.addEventListener('UserCreationSuccess', (e) => {
+        console.log('User created or already exists');
+    });
+
+    eventSource.addEventListener('CarTableCreated', (e) => {
+        console.log('Car table ready');
+    });
+
+    eventSource.addEventListener('CarLoaded', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            if (data && data.length > 0) {
+                state.car = data[0];
+                updateProfileUI(); // Fill form
+            }
+        } catch (err) { console.error('Error parsing CarLoaded', err); }
+    });
+
+    eventSource.addEventListener('CarSaved', (e) => {
+        const btn = document.getElementById('save-car-btn');
+        btn.textContent = 'Opgeslagen!';
+        setTimeout(() => btn.innerHTML = '<span class="btn-text">Auto Opslaan</span>', 2000);
     });
 
     function handleSuccess(msg) {
@@ -368,6 +408,95 @@ async function sendEvent(eventName, data) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
+    });
+}
+
+// Profile & User Logic
+async function handleNewConnection() {
+    // 1. Switch to Profile Tab
+    const profileTab = document.querySelector('.nav-item[data-target="view-profile"]');
+    if (profileTab) profileTab.click();
+
+    // 2. Create User
+    // Parse user details
+    const userInfo = getUserInfo();
+    console.log('Creating user with info:', userInfo);
+
+    // Update local profile UI immediately
+    updateProfileUI();
+
+    await sendEvent('CreateUser', {
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        email: userInfo.email
+    });
+
+    // 3. Ensure Car Table Exists
+    await sendEvent('CreateCarTable', {});
+
+    // 4. Get Car Info
+    await sendEvent('GetCar', {});
+
+    // 5. Also get drives
+    requestInitialData();
+}
+
+function getUserInfo() {
+    // Default fallback
+    let firstName = 'Gebruiker';
+    let lastName = '';
+    let email = 'onbekend@example.com';
+
+    if (state.user) {
+        if (state.user.userDetails) {
+            email = state.user.userDetails;
+            // Simple name parsing from email if no other data
+            // If userDetails is just "Developer", handle that
+            if (email === 'Developer') {
+                firstName = 'Developer';
+            } else if (email.includes('@')) {
+                const parts = email.split('@')[0].split('.');
+                if (parts.length > 0) firstName = capitalize(parts[0]);
+                if (parts.length > 1) lastName = capitalize(parts[1]);
+            } else {
+                firstName = email;
+            }
+        }
+    }
+    return { firstName, lastName, email };
+}
+
+function capitalize(s) {
+    return s && s[0].toUpperCase() + s.slice(1);
+}
+
+function updateProfileUI() {
+    const info = getUserInfo();
+    profileName.textContent = `${info.firstName} ${info.lastName}`.trim();
+    profileEmail.textContent = info.email;
+    profileInitials.textContent = info.firstName.charAt(0).toUpperCase();
+
+    // Car form
+    if (state.car) {
+        carBrandInput.value = state.car.brand || '';
+        carLicenseInput.value = state.car.licensePlate || '';
+    }
+}
+
+// Car Form
+if (carForm) {
+    carForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-car-btn');
+        btn.textContent = 'Opslaan...';
+
+        const brand = carBrandInput.value;
+        const license = carLicenseInput.value;
+
+        await sendEvent('SaveCar', {
+            brand: brand,
+            licensePlate: license
+        });
     });
 }
 

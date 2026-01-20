@@ -1,0 +1,61 @@
+{
+    "Id": null,
+    "Name": "SaveCarFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "save-car-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "save-car-step": {
+            "Id": "save-car-step",
+            "Type": "SendDataToDatabase",
+            "Parameters": {
+                "QueryType": "Insert",
+                "QueryTextType": "Text",
+                "Query": "IF EXISTS (SELECT 1 FROM Cars WHERE UserId = @UserId) UPDATE Cars SET Brand = @Brand, LicensePlate = @LicensePlate WHERE UserId = @UserId ELSE INSERT INTO Cars (UserId, Brand, LicensePlate) VALUES (@UserId, @Brand, @LicensePlate)",
+                "Parameters": {
+                    "UserId": "${principal.userId}",
+                    "Brand": "${event.brand}",
+                    "LicensePlate": "${event.licensePlate}"
+                }
+            },
+            "Alias": "CarSaved",
+            "NextStepId": "success-step",
+            "ConnectionId": 0
+        },
+        "success-step": {
+            "Id": "success-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "CarSaved",
+                "Data": {
+                    "Message": "Car information saved",
+                    "Status": "Success"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "CarSaveError",
+                "Data": {
+                    "Message": "Failed to save car information",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "SaveCar",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[principal.userId NOT EMPTY, event.brand NOT EMPTY, event.licensePlate NOT EMPTY]"
+        }
+    ]
+}

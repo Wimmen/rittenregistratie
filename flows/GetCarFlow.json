@@ -1,0 +1,56 @@
+{
+    "Id": null,
+    "Name": "GetCarFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-car-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "get-car-step": {
+            "Id": "get-car-step",
+            "Type": "SendDataToDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT TOP 1 Brand as brand, LicensePlate as licensePlate FROM Cars WHERE UserId = @UserId",
+                "Parameters": {
+                    "UserId": "${principal.userId}"
+                }
+            },
+            "Alias": "Car",
+            "NextStepId": "send-car-step",
+            "ConnectionId": 0
+        },
+        "send-car-step": {
+            "Id": "send-car-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "CarLoaded",
+                "Data": "${Car}"
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "GetCarError",
+                "Data": {
+                    "Message": "Failed to retrieve car information",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "GetCar",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[principal.userId NOT EMPTY]"
+        }
+    ]
+}

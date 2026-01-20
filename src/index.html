@@ -103,6 +103,35 @@
                     <div class="empty-state">Geen recente ritten gevonden.</div>
                 </div>
             </section>
+            <!-- Profile View -->
+            <section id="view-profile" class="view">
+                <div class="card profile-header">
+                    <div class="profile-avatar">
+                        <span id="profile-initials">?</span>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">Laden...</h2>
+                        <p id="profile-email" class="text-muted">...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Mijn Auto</h3>
+                    <form id="car-form">
+                        <div class="form-group">
+                            <label for="car-brand">Merk & Model</label>
+                            <input type="text" id="car-brand" placeholder="bv. Tesla Model 3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="car-license">Kenteken</label>
+                            <input type="text" id="car-license" placeholder="X-999-XX" required>
+                        </div>
+                        <button type="submit" id="save-car-btn" class="btn btn-secondary btn-block">
+                            <span class="btn-text">Auto Opslaan</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
         </main>
 
         <nav class="bottom-nav">
@@ -113,6 +142,10 @@
             <button class="nav-item" data-target="view-history">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                 <span>Geschiedenis</span>
+            </button>
+            <button class="nav-item" data-target="view-profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Profiel</span>
             </button>
         </nav>
     </div>
