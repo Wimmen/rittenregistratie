@@ -47,7 +47,7 @@
     "Events": [
         {
             "Id": null,
-            "Name": "GetCar",
+            "Name": "GetUser",
             "Version": "1.0",
             "Status": "Active",
             "Validation": "[principal.userId NOT EMPTY]"

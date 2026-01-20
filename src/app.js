@@ -479,9 +479,9 @@ function capitalize(s) {
 
 function updateProfileUI() {
     if (state.user) {
-        profileFirstName.textContent = state.user.firstName;
-        profileLastName.textContent = state.user.lastName;
-        profileEmail.textContent = state.user.email;
+        profileFirstName.value = state.user.firstName;
+        profileLastName.value = state.user.lastName;
+        profileEmail.value = state.user.email;
     }
 
     // Car form
