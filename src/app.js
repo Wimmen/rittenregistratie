@@ -32,7 +32,9 @@ const addressList = document.getElementById('address-list');
 const drivesListContainer = document.getElementById('drives-list');
 
 // Profile Elements
-const profileName = document.getElementById('profile-name');
+const profileForm = document.getElementById('profile-form');
+const profileFirstName = document.getElementById('profile-firstname');
+const profileLastName = document.getElementById('profile-lastname');
 const profileEmail = document.getElementById('profile-email');
 const profileInitials = document.getElementById('profile-initials');
 const carForm = document.getElementById('car-form');
@@ -191,6 +193,16 @@ function connectSSE() {
                 updateProfileUI(); // Fill form
             }
         } catch (err) { console.error('Error parsing CarLoaded', err); }
+    });
+
+    eventSource.addEventListener('UserLoaded', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            if (data && data.length > 0) {
+                state.user = data[0];
+                updateProfileUI(); // Fill form
+            }
+        } catch (err) { console.error('Error parsing UserLoaded', err); }
     });
 
     eventSource.addEventListener('CarSaved', (e) => {
@@ -425,15 +437,8 @@ async function handleNewConnection() {
     // Update local profile UI immediately
     updateProfileUI();
 
-    await sendEvent('CreateUser', {
-        firstName: userInfo.firstName,
-        lastName: userInfo.lastName,
-        email: userInfo.email
-    });
-
-    // 3. Ensure Car Table Exists
-    await sendEvent('CreateCarTable', {});
-
+    // 3. Get User Info
+    await sendEvent('GetUser', {});
     // 4. Get Car Info
     await sendEvent('GetCar', {});
 
@@ -471,10 +476,11 @@ function capitalize(s) {
 }
 
 function updateProfileUI() {
-    const info = getUserInfo();
-    profileName.textContent = `${info.firstName} ${info.lastName}`.trim();
-    profileEmail.textContent = info.email;
-    profileInitials.textContent = info.firstName.charAt(0).toUpperCase();
+    if (state.user) {
+        profileFirstName.textContent = state.user.firstName;
+        profileLastName.textContent = state.user.lastName;
+        profileEmail.textContent = state.user.email;
+    }
 
     // Car form
     if (state.car) {
@@ -496,6 +502,25 @@ if (carForm) {
         await sendEvent('SaveCar', {
             brand: brand,
             licensePlate: license
+        });
+    });
+}
+
+// Profile Form
+if (profileForm) {
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-profile-btn');
+        btn.textContent = 'Opslaan...';
+
+        const firstName = profileFirstName.value;
+        const lastName = profileLastName.value;
+        const email = profileEmail.value;
+
+        await sendEvent('CreateUser', {
+            firstName: firstName,
+            lastName: lastName,
+            email: email
         });
     });
 }

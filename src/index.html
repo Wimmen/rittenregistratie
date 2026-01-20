@@ -105,14 +105,25 @@
             </section>
             <!-- Profile View -->
             <section id="view-profile" class="view">
-                <div class="card profile-header">
-                    <div class="profile-avatar">
-                        <span id="profile-initials">?</span>
-                    </div>
-                    <div class="profile-info">
-                        <h2 id="profile-name">Laden...</h2>
-                        <p id="profile-email" class="text-muted">...</p>
-                    </div>
+                <div class="card">
+                    <h3>Mijn Profiel</h3>
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="profile-firstname">Voornaam</label>
+                            <input type="text" id="profile-firstname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-lastname">Achternaam</label>
+                            <input type="text" id="profile-lastname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-email">E-mailadres</label>
+                            <input type="email" id="profile-email" required>
+                        </div>
+                        <button type="submit" id="save-profile-btn" class="btn btn-secondary btn-block">
+                            <span class="btn-text">Profiel Opslaan</span>
+                        </button>
+                    </form>
                 </div>
 
                 <div class="card">

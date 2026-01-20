@@ -1,0 +1,56 @@
+{
+    "Id": null,
+    "Name": "GetUserFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-user-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "get-user-step": {
+            "Id": "get-user-step",
+            "Type": "SendDataToDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT TOP 1 FirstName, LastName, Email FROM Users WHERE Oid = @UserId",
+                "Parameters": {
+                    "UserId": "${principal.userId}"
+                }
+            },
+            "Alias": "user",
+            "NextStepId": "send-user-step",
+            "ConnectionId": 0
+        },
+        "send-user-step": {
+            "Id": "send-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "UserLoaded",
+                "Data": "${user}"
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "GetUserError",
+                "Data": {
+                    "Message": "Failed to retrieve user information",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "GetCar",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[principal.userId NOT EMPTY]"
+        }
+    ]
+}

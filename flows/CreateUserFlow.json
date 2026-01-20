@@ -3,9 +3,36 @@
   "Name": "CreateUserFlow",
   "Version": "1.0",
   "Status": "Active",
-  "StartStepId": "create-user-step",
+  "StartStepId": "get-existing-user-step",
   "ErrorStepId": "error-to-user-step",
   "Steps": {
+    "get-existing-user-step": {
+      "Id": "get-existing-user-step",
+      "Type": "SendDataToDatabase",
+      "Parameters": {
+        "QueryType": "Select",
+        "QueryTextType": "Text",
+        "Query": "SELECT Id FROM Users WHERE Oid = @Oid",
+        "Parameters": {
+          "Oid": "${principal.userId}"
+        }
+      },
+      "Alias": "UserExists",
+      "NextStepId": "check-user-exists-step",
+      "ConnectionId": 0
+    },
+    "check-user-exists-step": {
+      "Id": "check-user-exists-step",
+      "Type": "Decision",
+      "Parameters": {
+        "Condition": "${UserExists.0.Id} NOT EMPTY",
+        "TrueStepId": "update-user-step",
+        "FalseStepId": "create-user-step"
+      },
+      "Alias": "UserExistsCheck",
+      "NextStepId": "${UserExistsCheck}",
+      "ConnectionId": 0
+    },
     "create-user-step": {
       "Id": "create-user-step",
       "Type": "SendDataToDatabase",
@@ -21,6 +48,24 @@
         }
       },
       "Alias": "Created",
+      "NextStepId": "success-to-user-step",
+      "ConnectionId": 0
+    },
+    "update-user-step": {
+      "Id": "update-user-step",
+      "Type": "SendDataToDatabase",
+      "Parameters": {
+        "QueryType": "Update",
+        "QueryTextType": "Text",
+        "Query": "UPDATE Users SET FirstName = @FirstName, LastName = @LastName, Email = @Email, LastLogin = getDate() WHERE Oid = @Oid",
+        "Parameters": {
+          "FirstName": "${event.firstName}",
+          "LastName": "${event.lastName}",
+          "Email": "${event.email}",
+          "Oid": "${principal.userId}"
+        }
+      },
+      "Alias": "Updated",
       "NextStepId": "success-to-user-step",
       "ConnectionId": 0
     },
