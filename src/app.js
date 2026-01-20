@@ -122,10 +122,15 @@ async function initConnection() {
             state.connectionId = await res.json();
             connectSSE();
             requestInitialData();
+        } else {
+            console.error('Connection failed', res);
+            updateConnectionStatus(false);
+            setTimeout(initConnection, 3000);
         }
     } catch (e) {
         console.error('Connection failed', e);
         updateConnectionStatus(false);
+        setTimeout(initConnection, 3000);
     }
 }
 
