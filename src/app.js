@@ -23,6 +23,7 @@ const authOverlay = document.getElementById('auth-overlay');
 const appContainer = document.getElementById('app');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
+const resetBtn = document.getElementById('reset-btn');
 const connectionStatus = document.getElementById('connection-status');
 const navItems = document.querySelectorAll('.nav-item');
 const views = document.querySelectorAll('.view');
@@ -102,6 +103,11 @@ function showApp() {
     // Set today's date
     document.getElementById('date').valueAsDate = new Date();
 }
+
+// Event Listeners
+resetBtn.addEventListener('click', () => {
+    resetForm();
+});
 
 loginBtn.addEventListener('click', () => {
     window.location.href = `/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;

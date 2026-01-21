@@ -67,7 +67,7 @@ body {
 .app-container {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 166px);
+    height: calc(100vh - 100px);
 }
 
 .app-header {
@@ -278,8 +278,27 @@ textarea {
     color: white;
 }
 
+.btn-secondary {
+    background: #e2e8f0;
+    color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+}
+
 .btn-block {
     width: 100%;
+}
+
+.drive-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.drive-buttons .btn {
+    flex: 1;
 }
 
 /* History List */
