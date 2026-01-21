@@ -3,6 +3,7 @@
 // State
 let state = {
     user: null,
+    principal: null,
     connectionId: null,
     lastMileage: 0,
     recentDrives: [],
@@ -68,7 +69,7 @@ async function checkAuth() {
         const clientPrincipal = data.clientPrincipal;
 
         if (clientPrincipal) {
-            state.user = clientPrincipal;
+            state.principal = clientPrincipal;
             showApp();
             initConnection();
         } else {
@@ -79,7 +80,7 @@ async function checkAuth() {
         // Fallback for local dev without generic auth provider
         if (location.hostname === 'localhost') {
             console.log('Localhost detected, bypassing auth for dev');
-            state.user = { userId: 'dev-user', userDetails: 'Developer' };
+            state.principal = { userId: 'dev-user', userDetails: 'Developer' };
             showApp();
             initConnection();
         } else {
@@ -209,6 +210,12 @@ function connectSSE() {
         const btn = document.getElementById('save-car-btn');
         btn.textContent = 'Opgeslagen!';
         setTimeout(() => btn.innerHTML = '<span class="btn-text">Auto Opslaan</span>', 2000);
+    });
+
+    eventSource.addEventListener('UserSaved', (e) => {
+        const btn = document.getElementById('save-profile-btn');
+        btn.textContent = 'Opgeslagen!';
+        setTimeout(() => btn.innerHTML = '<span class="btn-text">Profiel Opslaan</span>', 2000);
     });
 
     function handleSuccess(msg) {
@@ -433,8 +440,8 @@ async function handleNewConnection() {
 
     // 2. Create User
     // Parse user details
-    const userInfo = getUserInfo();
-    console.log('Creating user with info:', userInfo);
+    getUserInfo();
+    console.log('Creating user with info:', state.user);
 
     // Update local profile UI immediately
     updateProfileUI();
@@ -450,27 +457,22 @@ async function handleNewConnection() {
 
 function getUserInfo() {
     // Default fallback
-    let firstName = 'Gebruiker';
-    let lastName = '';
-    let email = 'onbekend@example.com';
+    state.user = { firstName: '', lastName: '', email: '' };
 
-    if (state.user) {
-        if (state.user.userDetails) {
-            email = state.user.userDetails;
+    if (state.principal) {
+        if (state.principal.userDetails) {
+            state.user.email = state.principal.userDetails;
             // Simple name parsing from email if no other data
             // If userDetails is just "Developer", handle that
-            if (email === 'Developer') {
-                firstName = 'Developer';
-            } else if (email.includes('@')) {
-                const parts = email.split('@')[0].split('.');
-                if (parts.length > 0) firstName = capitalize(parts[0]);
-                if (parts.length > 1) lastName = capitalize(parts[1]);
-            } else {
-                firstName = email;
+            if (state.user.email === 'Developer') {
+                state.user.firstName = 'Developer';
+            } else if (state.user.email.includes('@')) {
+                const parts = state.user.email.split('@')[0].split('.');
+                if (parts.length > 0) state.user.firstName = capitalize(parts[0]);
+                if (parts.length > 1) state.user.lastName = capitalize(parts[1]);
             }
         }
     }
-    return { firstName, lastName, email };
 }
 
 function capitalize(s) {

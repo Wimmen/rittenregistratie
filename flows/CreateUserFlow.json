@@ -73,9 +73,9 @@
       "Id": "success-to-user-step",
       "Type": "SendMessageToUser",
       "Parameters": {
-        "Event": "UserCreationSuccess",
+        "Event": "UserSaved",
         "Data": {
-          "Message": "User Creation Successful",
+          "Message": "User Save Successful",
           "Status": "Success"
         }
       },
@@ -85,9 +85,9 @@
       "Id": "error-to-user-step",
       "Type": "SendMessageToUser",
       "Parameters": {
-        "Event": "UserCreationFailed",
+        "Event": "UserSaveFailed",
         "Data": {
-          "Message": "User Creation Failed",
+          "Message": "User Save Failed",
           "Status": "Failed",
           "Error": "${error}"
         }
