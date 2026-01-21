@@ -264,6 +264,7 @@ function handleRecentDrives(drives) {
 
     if (state.sortedDrives.length > 0) {
         state.lastMileage = state.sortedDrives[0].mileage;
+        document.getElementById('from').value = state.sortedDrives[0].to;
     } else {
         state.lastMileage = 0;
     }
