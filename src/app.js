@@ -412,9 +412,9 @@ function setupForm() {
     });
 }
 
-function updateCalculatedDistance(lastMileage) {
+function updateCalculatedDistance() {
     const current = parseInt(currentMileageInput.value) || 0;
-    const dist = Math.max(0, current - lastMileage);
+    const dist = Math.max(0, current - state.lastMileage);
     calculatedDistanceEl.textContent = dist + ' km';
 }
 
