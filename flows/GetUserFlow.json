@@ -12,7 +12,7 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "SELECT TOP 1 FirstName, LastName, Email FROM Users WHERE Oid = @UserId",
+                "Query": "SELECT TOP 1 firstName, lastName, email FROM Users WHERE Oid = @UserId",
                 "Parameters": {
                     "UserId": "${principal.userId}"
                 }

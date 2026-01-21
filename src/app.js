@@ -7,6 +7,7 @@ let state = {
     connectionId: null,
     lastMileage: 0,
     recentDrives: [],
+    sortedDrives: [],
     addresses: new Set(),
     connected: false,
     editingId: null,
@@ -259,10 +260,10 @@ function handleRecentDrives(drives) {
     // Find last mileage
     // Assuming drives are ordered or we sort them. 
     // Let's sort by date/mileage desc just in case
-    const sortedDrives = [...state.recentDrives].sort((a, b) => b.mileage - a.mileage);
+    state.sortedDrives = [...state.recentDrives].sort((a, b) => b.mileage - a.mileage);
 
-    if (sortedDrives.length > 0) {
-        state.lastMileage = sortedDrives[0].mileage;
+    if (state.sortedDrives.length > 0) {
+        state.lastMileage = state.sortedDrives[0].mileage;
     } else {
         state.lastMileage = 0;
     }
@@ -272,7 +273,7 @@ function handleRecentDrives(drives) {
     updateCalculatedDistance();
 
     // Render list
-    renderDrivesList(sortedDrives);
+    renderDrivesList(state.sortedDrives);
 
     // Update addresses
     state.addresses = new Set();
@@ -332,7 +333,7 @@ function formatDate(dateStr) {
 
 function editDrive(drive, index) {
     state.editingId = drive.id;
-    state.lastMileage = sortedDrives.length > index + 1 ? sortedDrives[index + 1].mileage : 0;
+    state.lastMileage = state.sortedDrives.length > index + 1 ? state.sortedDrives[index + 1].mileage : 0;
 
     // Fill form
     document.getElementById('date').value = drive.date.split('T')[0];
