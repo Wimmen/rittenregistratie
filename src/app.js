@@ -24,6 +24,7 @@ const appContainer = document.getElementById('app');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const resetBtn = document.getElementById('reset-btn');
+const saveBtn = document.getElementById('save-btn');
 const connectionStatus = document.getElementById('connection-status');
 const navItems = document.querySelectorAll('.nav-item');
 const views = document.querySelectorAll('.view');
@@ -356,7 +357,7 @@ function editDrive(drive, index) {
     updateCalculatedDistance();
 
     // UI Update
-    document.querySelector('.btn-text').textContent = 'Rit Bijwerken';
+    saveBtn.querySelector('.btn-text').textContent = 'Rit Bijwerken';
 
     // Switch view
     navItems[0].click(); // Go to 'New' tab
@@ -366,9 +367,9 @@ function resetForm() {
     state.editingId = null;
     driveForm.reset();
     document.getElementById('date').valueAsDate = new Date();
-    document.querySelector('.btn-text').textContent = 'Rit Opslaan';
     document.querySelector('.loader').classList.add('hidden');
-    document.getElementById('save-btn').disabled = false;
+    saveBtn.querySelector('.btn-text').textContent = 'Rit Opslaan';
+    saveBtn.disabled = false;
 }
 
 // Form Logic
@@ -383,11 +384,10 @@ function setupForm() {
             return;
         }
 
-        const btn = document.getElementById('save-btn');
-        const loader = btn.querySelector('.loader');
-        const text = btn.querySelector('.btn-text');
+        const loader = saveBtn.querySelector('.loader');
+        const text = saveBtn.querySelector('.btn-text');
 
-        btn.disabled = true;
+        saveBtn.disabled = true;
         text.textContent = 'Opslaan...';
         loader.classList.remove('hidden');
 
