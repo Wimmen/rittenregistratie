@@ -8,7 +8,7 @@
     "Steps": {
         "insert-drive-step": {
             "Id": "insert-drive-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Insert",
                 "QueryTextType": "Text",

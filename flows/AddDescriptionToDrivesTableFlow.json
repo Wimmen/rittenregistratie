@@ -8,7 +8,7 @@
     "Steps": {
         "alter-table-step": {
             "Id": "alter-table-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "Query": "ALTER TABLE Drives ADD Description NVARCHAR(MAX)"
             },
@@ -17,7 +17,7 @@
         },
         "insert-migration-step": {
             "Id": "insert-migration-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "Query": "INSERT INTO ddl_history (migration_name, status, query) VALUES ('AddDescriptionToDrivesTableFlow', 'Completed', 'ALTER TABLE Drives ADD Description NVARCHAR(MAX)')"
             },

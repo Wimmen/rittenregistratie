@@ -8,7 +8,7 @@
   "Steps": {
     "select-table-step": {
       "Id": "select-table-step",
-      "Type": "SendDataToDatabase",
+      "Type": "QueryDatabase",
       "Parameters": {
         "Query": "SELECT * FROM ddl_history"
       },

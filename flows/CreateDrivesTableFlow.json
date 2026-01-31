@@ -8,7 +8,7 @@
     "Steps": {
         "create-table-step": {
             "Id": "create-table-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "Query": "CREATE TABLE Drives (id INT IDENTITY PRIMARY KEY, DriveDate DATETIME2, FromLocation NVARCHAR(255), ToLocation NVARCHAR(255), Mileage INT, Distance INT, Type NVARCHAR(50), UserId NVARCHAR(255), CreatedAt DATETIME2 DEFAULT SYSUTCDATETIME())"
             },
@@ -17,7 +17,7 @@
         },
         "insert-migration-step": {
             "Id": "insert-migration-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "Query": "INSERT INTO ddl_history (migration_name, status, query) VALUES ('CreateDrivesTableFlow', 'Completed', 'CREATE TABLE Drives (id INT IDENTITY PRIMARY KEY, DriveDate DATETIME2, FromLocation NVARCHAR(255), ToLocation NVARCHAR(255), Mileage INT, Distance INT, Type NVARCHAR(50), UserId NVARCHAR(255), CreatedAt DATETIME2 DEFAULT SYSUTCDATETIME())')"
             },

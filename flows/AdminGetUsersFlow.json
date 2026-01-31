@@ -1,0 +1,78 @@
+{
+    "Id": null,
+    "Name": "AdminGetUsersFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-users-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "get-users-step": {
+            "Id": "get-users-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT * FROM Users WHERE (FirstName LIKE @Search OR LastName LIKE @Search OR Email LIKE @Search) ORDER BY LastLogin DESC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                "Parameters": {
+                    "Search": "%${event.search}%",
+                    "Offset": "${event.offset}",
+                    "Limit": "${event.limit}"
+                }
+            },
+            "Alias": "users",
+            "NextStepId": "count-users-step",
+            "ConnectionId": 0
+        },
+        "count-users-step": {
+            "Id": "count-users-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT COUNT(*) as Total FROM Users WHERE (FirstName LIKE @Search OR LastName LIKE @Search OR Email LIKE @Search)",
+                "Parameters": {
+                    "Search": "%${event.search}%"
+                }
+            },
+            "Alias": "count",
+            "NextStepId": "send-users-step",
+            "ConnectionId": 0
+        },
+        "send-users-step": {
+            "Id": "send-users-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminUsersList",
+                "Data": {
+                    "Items": "${users}",
+                    "Total": "${count.0.Total}",
+                    "Offset": "${event.offset}",
+                    "Limit": "${event.limit}"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminUsersListFailed",
+                "Data": {
+                    "Message": "Failed to retrieve users",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminGetUsers",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[principal.userId NOT EMPTY]"
+        }
+    ]
+}

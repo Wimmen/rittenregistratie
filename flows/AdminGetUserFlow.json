@@ -1,6 +1,6 @@
 {
     "Id": null,
-    "Name": "GetUserFlow",
+    "Name": "AdminGetUserFlow",
     "Version": "1.0",
     "Status": "Active",
     "StartStepId": "get-user-step",
@@ -12,9 +12,9 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "SELECT TOP 1 firstName, lastName, email FROM Users WHERE Oid = @UserId",
+                "Query": "SELECT * FROM Users WHERE Id = @Id",
                 "Parameters": {
-                    "UserId": "${principal.userId}"
+                    "Id": "${event.id}"
                 }
             },
             "Alias": "user",
@@ -25,7 +25,7 @@
             "Id": "send-user-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "UserLoaded",
+                "Event": "AdminUserLoaded",
                 "Data": "${user}"
             },
             "NextStepId": null
@@ -34,9 +34,9 @@
             "Id": "error-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "GetUserError",
+                "Event": "AdminGetUserFailed",
                 "Data": {
-                    "Message": "Failed to retrieve user information",
+                    "Message": "Failed to retrieve user details",
                     "Status": "Failed",
                     "Error": "${error}"
                 }
@@ -47,10 +47,10 @@
     "Events": [
         {
             "Id": null,
-            "Name": "GetUser",
+            "Name": "AdminGetUser",
             "Version": "1.0",
             "Status": "Active",
-            "Validation": "[principal.userId NOT EMPTY]"
+            "Validation": "[principal.userId NOT EMPTY, event.id NOT EMPTY]"
         }
     ]
 }

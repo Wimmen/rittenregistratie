@@ -8,7 +8,7 @@
     "Steps": {
         "create-table-step": {
             "Id": "create-table-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Ddl",
                 "QueryTextType": "Text",
@@ -21,7 +21,7 @@
         },
         "insert-migration-step": {
             "Id": "insert-migration-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "Query": "INSERT INTO ddl_history (migration_name, status, query) VALUES ('CreateCarTableFlow', 'Completed', 'CREATE TABLE Cars (Id int IDENTITY(1,1) PRIMARY KEY, UserId varchar(255) NOT NULL, Brand varchar(255), LicensePlate varchar(50))')"
             },

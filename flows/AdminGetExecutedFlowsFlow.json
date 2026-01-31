@@ -1,0 +1,78 @@
+{
+    "Id": null,
+    "Name": "AdminGetExecutedFlowsFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-executed-flows-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "get-executed-flows-step": {
+            "Id": "get-executed-flows-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT * FROM ExecutedFlows WHERE FlowName LIKE @Search ORDER BY StartTime DESC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                "Parameters": {
+                    "Search": "%${event.search}%",
+                    "Offset": "${event.offset}",
+                    "Limit": "${event.limit}"
+                }
+            },
+            "Alias": "executedFlows",
+            "NextStepId": "count-executed-flows-step",
+            "ConnectionId": 0
+        },
+        "count-executed-flows-step": {
+            "Id": "count-executed-flows-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT COUNT(*) as Total FROM ExecutedFlows WHERE FlowName LIKE @Search",
+                "Parameters": {
+                    "Search": "%${event.search}%"
+                }
+            },
+            "Alias": "count",
+            "NextStepId": "send-executed-flows-step",
+            "ConnectionId": 0
+        },
+        "send-executed-flows-step": {
+            "Id": "send-executed-flows-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminExecutedFlowsList",
+                "Data": {
+                    "Items": "${executedFlows}",
+                    "Total": "${count.0.Total}",
+                    "Offset": "${event.offset}",
+                    "Limit": "${event.limit}"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminExecutedFlowsListFailed",
+                "Data": {
+                    "Message": "Failed to retrieve executed flows",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminGetExecutedFlows",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[principal.userId NOT EMPTY]"
+        }
+    ]
+}

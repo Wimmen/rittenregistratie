@@ -8,7 +8,7 @@
     "Steps": {
         "save-car-step": {
             "Id": "save-car-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Insert",
                 "QueryTextType": "Text",

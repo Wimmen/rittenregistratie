@@ -1,0 +1,78 @@
+{
+    "Id": null,
+    "Name": "AdminGetFlowsFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-flows-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "get-flows-step": {
+            "Id": "get-flows-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT * FROM Flows WHERE Name LIKE @Search ORDER BY Name ASC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                "Parameters": {
+                    "Search": "%${event.search}%",
+                    "Offset": "${event.offset}",
+                    "Limit": "${event.limit}"
+                }
+            },
+            "Alias": "flows",
+            "NextStepId": "count-flows-step",
+            "ConnectionId": 0
+        },
+        "count-flows-step": {
+            "Id": "count-flows-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT COUNT(*) as Total FROM Flows WHERE Name LIKE @Search",
+                "Parameters": {
+                    "Search": "%${event.search}%"
+                }
+            },
+            "Alias": "count",
+            "NextStepId": "send-flows-step",
+            "ConnectionId": 0
+        },
+        "send-flows-step": {
+            "Id": "send-flows-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminFlowsList",
+                "Data": {
+                    "Items": "${flows}",
+                    "Total": "${count.0.Total}",
+                    "Offset": "${event.offset}",
+                    "Limit": "${event.limit}"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminFlowsListFailed",
+                "Data": {
+                    "Message": "Failed to retrieve flows",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminGetFlows",
+            "Version": "1.0",
+            "Status": "Active",
+            "Validation": "[principal.userId NOT EMPTY]"
+        }
+    ]
+}

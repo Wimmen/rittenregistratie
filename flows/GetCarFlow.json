@@ -8,7 +8,7 @@
     "Steps": {
         "get-car-step": {
             "Id": "get-car-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",

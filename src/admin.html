@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Admin - Rittenregistratie</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="admin-body">
+
+    <div id="auth-overlay" class="auth-overlay hidden">
+        <div class="auth-card">
+            <h1>Admin Toegang</h1>
+            <p>Log in om toegang te krijgen tot het beheerpaneel.</p>
+            <button id="login-btn" class="btn btn-primary">Inloggen</button>
+        </div>
+    </div>
+
+    <div id="app" class="app-container hidden">
+        <header class="app-header admin-header">
+            <div class="header-content">
+                <h1>Admin Paneel</h1>
+                <div class="header-actions">
+                    <a href="index.html" class="btn-text"
+                        style="color: var(--text-secondary); margin-right: 1rem; text-decoration: none;">Naar App</a>
+                    <button id="logout-btn" class="btn-icon" aria-label="Uitloggen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="connection-pill disconnected" id="connection-status">Verbinden...</div>
+        </header>
+
+        <nav class="admin-nav">
+            <button class="nav-pill active" data-target="view-users">Users</button>
+            <button class="nav-pill" data-target="view-flows">Flows</button>
+            <button class="nav-pill" data-target="view-executed">Executed Flows</button>
+        </nav>
+
+        <main class="app-content admin-content">
+
+            <!-- Users View -->
+            <section id="view-users" class="view active">
+                <div class="toolbar">
+                    <input type="text" id="users-search" placeholder="Zoek gebruikers..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Status</th>
+                                <th>Laatst gezien</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-list">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="users-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Flows View -->
+            <section id="view-flows" class="view">
+                <div class="toolbar">
+                    <input type="text" id="flows-search" placeholder="Zoek flows..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>Versie</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flows-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination similar to users -->
+                <div class="pagination" id="flows-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Executed Flows View -->
+            <section id="view-executed" class="view">
+                <div class="toolbar">
+                    <input type="text" id="executed-search" placeholder="Zoek executed flows..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Flow</th>
+                                <th>Start Tijd</th>
+                                <th>Duur (ms)</th>
+                                <th>Gebruiker</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="executed-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="executed-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- User Detail Modal -->
+        <div id="user-modal" class="modal hidden">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h2>Gebruiker Details</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="user-detail-content">
+                    <div class="loader"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-user-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

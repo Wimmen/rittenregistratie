@@ -8,7 +8,7 @@
     "Steps": {
         "update-drive-step": {
             "Id": "update-drive-step",
-            "Type": "SendDataToDatabase",
+            "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Update",
                 "QueryTextType": "Text",
