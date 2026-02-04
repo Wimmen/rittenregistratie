@@ -72,6 +72,7 @@
             "Name": "AdminGetUsers",
             "Version": "1.0",
             "Status": "Active",
+            "Roles": ["Admin"],
             "Validation": "[principal.userId NOT EMPTY]"
         }
     ]
