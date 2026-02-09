@@ -1,0 +1,6 @@
+{
+    "Name": "CreateCarsTable",
+    "Scripts": [
+        "CREATE TABLE Cars (Id int IDENTITY(1,1) PRIMARY KEY, UserId varchar(255) NOT NULL, Brand varchar(255), LicensePlate varchar(50))"
+    ]
+}

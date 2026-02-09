@@ -1,0 +1,31 @@
+{
+    "Name": "UserRoles",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "UserRoles table",
+    "Table": {
+        "Name": "UserRoles",
+        "Columns": [
+            {
+                "Name": "UserId",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsNullable": false,
+                "ForeignKey": {
+                    "Table": "Users",
+                    "Column": "Id"
+                }
+            },
+            {
+                "Name": "RoleId",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsNullable": false,
+                "ForeignKey": {
+                    "Table": "Roles",
+                    "Column": "Id"
+                }
+            }
+        ]
+    }
+}

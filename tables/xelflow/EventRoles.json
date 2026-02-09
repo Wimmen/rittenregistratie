@@ -1,0 +1,31 @@
+{
+    "Name": "EventRoles",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "EventRoles table",
+    "Table": {
+        "Name": "EventRoles",
+        "Columns": [
+            {
+                "Name": "EventId",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsNullable": false,
+                "ForeignKey": {
+                    "Table": "Events",
+                    "Column": "Id"
+                }
+            },
+            {
+                "Name": "RoleId",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsNullable": false,
+                "ForeignKey": {
+                    "Table": "Roles",
+                    "Column": "Id"
+                }
+            }
+        ]
+    }
+}

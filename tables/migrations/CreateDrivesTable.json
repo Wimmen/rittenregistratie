@@ -1,0 +1,6 @@
+{
+    "Name": "CreateDrivesTable",
+    "Scripts": [
+        "CREATE TABLE Drives (id INT IDENTITY PRIMARY KEY, DriveDate DATETIME2, FromLocation NVARCHAR(255), ToLocation NVARCHAR(255), Mileage INT, Distance INT, Type NVARCHAR(50), UserId NVARCHAR(255), CreatedAt DATETIME2 DEFAULT SYSUTCDATETIME())"
+    ]
+}

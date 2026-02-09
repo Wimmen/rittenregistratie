@@ -1,0 +1,57 @@
+{
+    "Id": null,
+    "Name": "ExecutedFlows",
+    "Version": "1.0",
+    "Status": "Active",
+    "Columns": [
+        {
+            "Name": "Id",
+            "DataType": "bigint",
+            "IsPrimaryKey": true,
+            "IsAutoIncrement": true
+        },
+        {
+            "Name": "FlowId",
+            "DataType": "int",
+            "IsNullable": false,
+            "ForeignKey": {
+                "TableName": "Flows",
+                "ColumnName": "Id"
+            }
+        },
+        {
+            "Name": "EventId",
+            "DataType": "int",
+            "IsNullable": false,
+            "ForeignKey": {
+                "TableName": "Events",
+                "ColumnName": "Id"
+            }
+        },
+        {
+            "Name": "ConnectionId",
+            "DataType": "nvarchar(50)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Status",
+            "DataType": "nvarchar(50)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Start",
+            "DataType": "datetime",
+            "IsNullable": false
+        },
+        {
+            "Name": "LastUpdated",
+            "DataType": "datetime",
+            "IsNullable": true
+        },
+        {
+            "Name": "Guid",
+            "DataType": "uniqueidentifier",
+            "IsNullable": true
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "Id": null,
+    "Name": "ExecutedSteps",
+    "Version": "1.0",
+    "Status": "Active",
+    "Columns": [
+        {
+            "Name": "Id",
+            "DataType": "bigint",
+            "IsPrimaryKey": true,
+            "IsAutoIncrement": true
+        },
+        {
+            "Name": "ExecutedFlowId",
+            "DataType": "bigint",
+            "IsNullable": false,
+            "ForeignKey": {
+                "TableName": "ExecutedFlows",
+                "ColumnName": "Id"
+            }
+        },
+        {
+            "Name": "StepId",
+            "DataType": "nvarchar(50)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Message",
+            "DataType": "nvarchar(max)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Start",
+            "DataType": "datetime",
+            "IsNullable": false
+        },
+        {
+            "Name": "LastUpdated",
+            "DataType": "datetime",
+            "IsNullable": true
+        }
+    ]
+}

@@ -7,14 +7,14 @@ app.http('events', {
 
   context.log("Events POST proxy gestart");
 
-  const externalUrl = "https://sanme.azurewebsites.net/api/events";
+  const externalUrl = process.env.XELFLOW_API_URL + "/api/events";
 
   // Haal SWA identity header op
   const principalHeader = req.headers.get("x-ms-client-principal");
   context.log(`Principal header aanwezig: ${!!principalHeader}`);
 
   // Haal API-key op (vanuit client of SWA config)
-  const apiKey = process.env.EXTERNAL_API_KEY;
+  const apiKey = process.env.XELFLOW_API_KEY;
   context.log(`API key aanwezig: ${!!apiKey}`);
 
   // Forward de body zoals ontvangen

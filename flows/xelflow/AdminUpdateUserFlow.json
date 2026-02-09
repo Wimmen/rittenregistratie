@@ -55,7 +55,8 @@
             "Name": "AdminUpdateUser",
             "Version": "1.0",
             "Status": "Active",
-            "Validation": "[principal.userId NOT EMPTY, event.id NOT EMPTY]"
+            "Roles": ["Admin"],
+            "Validation": ""
         }
     ]
 }

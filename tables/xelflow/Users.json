@@ -1,0 +1,43 @@
+{
+    "Name": "Users",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "Users table",
+    "Table": {
+        "Name": "Users",
+        "Columns": [
+            {
+                "Name": "Id",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsIdentity": true
+            },
+            {
+                "Name": "Oid",
+                "Type": "nvarchar(50)",
+                "IsNullable": false
+            },
+            {
+                "Name": "Email",
+                "Type": "nvarchar(250)",
+                "IsNullable": false
+            },
+            {
+                "Name": "FirstName",
+                "Type": "nvarchar(250)",
+                "IsNullable": false
+            },
+            {
+                "Name": "LastName",
+                "Type": "nvarchar(250)",
+                "IsNullable": false
+            },
+            {
+                "Name": "Disabled",
+                "Type": "bit",
+                "IsNullable": false,
+                "DefaultValue": 0
+            }
+        ]
+    }
+}

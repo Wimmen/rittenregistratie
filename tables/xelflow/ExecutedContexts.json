@@ -1,0 +1,33 @@
+{
+    "Id": null,
+    "Name": "ExecutedContexts",
+    "Version": "1.0",
+    "Status": "Active",
+    "Columns": [
+        {
+            "Name": "Id",
+            "DataType": "bigint",
+            "IsPrimaryKey": true,
+            "IsAutoIncrement": true
+        },
+        {
+            "Name": "ExecutedFlowId",
+            "DataType": "bigint",
+            "IsNullable": false,
+            "ForeignKey": {
+                "TableName": "ExecutedFlows",
+                "ColumnName": "Id"
+            }
+        },
+        {
+            "Name": "Key",
+            "DataType": "nvarchar(50)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Value",
+            "DataType": "nvarchar(max)",
+            "IsNullable": false
+        }
+    ]
+}

@@ -1,6 +1,6 @@
 {
   "Id": null,
-  "Name": "SelectDdlHistoryFlow",
+  "Name": "SelectMigrationsFlow",
   "Version": "1.0",
   "Status": "Active",
   "StartStepId": "select-table-step",
@@ -10,9 +10,9 @@
       "Id": "select-table-step",
       "Type": "QueryDatabase",
       "Parameters": {
-        "Query": "SELECT * FROM ddl_history"
+        "Query": "SELECT * FROM Migrations"
       },
-      "Alias": "ddl_history",
+      "Alias": "Migrations",
       "NextStepId": "success-to-user-step",
       "ConnectionId": 0
     },
@@ -21,7 +21,7 @@
       "Type": "SendMessageToUser",
       "Parameters": {
         "Event": "HistoryCompleted",
-        "Data": "${ddl_history}"
+        "Data": "${Migrations}"
       },
       "NextStepId": null
     },
@@ -31,7 +31,7 @@
       "Parameters": {
         "Event": "HistoryFailed",
         "Data": {
-          "MigrationName": "SelectDdlHistoryFlow",
+          "MigrationName": "SelectMigrationsFlow",
           "Message": "Select query failed",
           "Status": "Failed",
           "Error": "${error}"
@@ -43,10 +43,11 @@
   "Events": [
     {
       "Id": null,
-      "Name": "RunCreateDdlHistoryTableFlow",
+      "Name": "SelectMigrations",
       "Version": "1.0",
       "Status": "Active",
-      "Validation": "User.Role = 'admin'"
+      "Roles": ["Admin"],
+      "Validation": ""
     }
   ]
 }

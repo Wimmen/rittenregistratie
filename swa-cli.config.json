@@ -1,0 +1,15 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "xelflow-web": {
+      "appLocation": "src",
+      "apiLocation": "api",
+      "outputLocation": ".",
+      "apiLanguage": "node",
+      "apiVersion": "20",
+      "apiBuildCommand": "npm run build --if-present",
+      "appName": "rittenregistratie",
+      "resourceGroup": "data-rittenregistratie"
+    }
+  }
+}

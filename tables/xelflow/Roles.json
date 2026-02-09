@@ -1,0 +1,22 @@
+{
+    "Name": "Roles",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "Roles table",
+    "Table": {
+        "Name": "Roles",
+        "Columns": [
+            {
+                "Name": "Id",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsIdentity": true
+            },
+            {
+                "Name": "Name",
+                "Type": "nvarchar(100)",
+                "IsNullable": false
+            }
+        ]
+    }
+}

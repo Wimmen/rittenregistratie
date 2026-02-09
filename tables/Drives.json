@@ -1,0 +1,63 @@
+{
+    "Name": "Drives",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "Drives table",
+    "Table": {
+        "Name": "Drives",
+        "Columns": [
+            {
+                "Name": "Id",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsIdentity": true
+            },
+            {
+                "Name": "Type",
+                "Type": "nvarchar(50)",
+                "IsNullable": false
+            },
+            {
+                "Name": "UserId",
+                "Type": "nvarchar(255)",
+                "IsNullable": false
+            },
+            {
+                "Name": "FromLocation",
+                "Type": "nvarchar(255)",
+                "IsNullable": false
+            },
+            {
+                "Name": "ToLocation",
+                "Type": "nvarchar(255)",
+                "IsNullable": false
+            },
+            {
+                "Name": "DriveDate",
+                "Type": "datetime",
+                "IsNullable": false
+            },
+            {
+                "Name": "Mileage",
+                "Type": "int",
+                "IsNullable": false
+            },
+            {
+                "Name": "Distance",
+                "Type": "int",
+                "IsNullable": false
+            },
+            {
+                "Name": "Description",
+                "Type": "nvarchar(max)",
+                "IsNullable": true
+            },
+            {
+                "Name": "CreatedAt",
+                "Type": "datetime",
+                "IsNullable": false,
+                "DefaultValue": "SYSUTCDATETIME()"
+            }
+        ]
+    }
+}

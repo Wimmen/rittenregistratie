@@ -1,0 +1,47 @@
+{
+    "Name": "Flows",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "Flows table",
+    "Table": {
+        "Name": "Flows",
+        "Columns": [
+            {
+                "Name": "Id",
+                "Type": "int",
+                "IsPrimaryKey": true,
+                "IsIdentity": true
+            },
+            {
+                "Name": "Name",
+                "Type": "nvarchar(250)",
+                "IsNullable": false
+            },
+            {
+                "Name": "Version",
+                "Type": "nvarchar(50)",
+                "IsNullable": false
+            },
+            {
+                "Name": "Status",
+                "Type": "nvarchar(50)",
+                "IsNullable": false
+            },
+            {
+                "Name": "Steps",
+                "Type": "nvarchar(max)",
+                "IsNullable": true
+            },
+            {
+                "Name": "StartStepId",
+                "Type": "nvarchar(50)",
+                "IsNullable": false
+            },
+            {
+                "Name": "ErrorStepId",
+                "Type": "nvarchar(50)",
+                "IsNullable": true
+            }
+        ]
+    }
+}
