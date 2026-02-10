@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "sirv ./src public --cors --single --no-clear --port 8000",
-    "sync": "node ./flows/sync.js"
+    "sync-flows": "node ./flows/sync.js",
+    "sync-tables": "node ./tables/migrations/sync.js"
   }
 }

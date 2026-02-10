@@ -3,8 +3,8 @@ const path = require('path');
 
 async function syncFlows() {
     try {
-        // 1. Read EXTERNAL_API_KEY from ../api/local.settings.json
-        const settingsPath = path.join(__dirname, '../api/local.settings.json');
+        // 1. Read ADMIN_API_KEY from ../api/local.settings.json
+        const settingsPath = path.join(__dirname, '../../api/local.settings.json');
 
         if (!fs.existsSync(settingsPath)) {
             console.error(`Error: Could not find settings file at ${settingsPath}`);
@@ -26,18 +26,18 @@ async function syncFlows() {
             process.exit(1);
         }
 
-        const apiUrl = `${settings.Values.XELFLOW_API_URL}/api/flows/${apiKey}`;
+        const apiUrl = `${settings.Values.XELFLOW_API_URL}/api/migrations/${apiKey}`;
 
         // 2. Find all .json files in current directory
         const flowsDir = __dirname;
         const files = fs.readdirSync(flowsDir).filter(file => file.endsWith('.json'));
 
         if (files.length === 0) {
-            console.log("No .json flow files found to sync.");
+            console.log("No .json migration files found to sync.");
             return;
         }
 
-        console.log(`Found ${files.length} flow(s) to sync...`);
+        console.log(`Found ${files.length} migration(s) to sync...`);
 
         // 3. Sync each flow
         for (const file of files) {
@@ -65,6 +65,8 @@ async function syncFlows() {
 
                 if (response.ok) {
                     console.log(`✓ Successfully synced ${file}`);
+                    // move file to processed folder
+                    fs.renameSync(filePath, path.join(flowsDir, 'processed', file));
                 } else {
                     const text = await response.text();
                     console.error(`✗ Failed to sync ${file}: ${response.status} ${response.statusText} - ${text}`);
