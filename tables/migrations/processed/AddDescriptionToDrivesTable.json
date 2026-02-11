@@ -1,0 +1,6 @@
+{
+    "Name": "AddDescriptionToDrivesTable",
+    "Scripts": [
+        "ALTER TABLE Drives ADD Description NVARCHAR(MAX) NULL"
+    ]
+}
