@@ -16,8 +16,8 @@ let state = {
 
 // Constants
 const BASE_URL = '/api';
-//const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
-const SSE_URL = 'http://localhost:54819/api/events/stream';
+const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+//const SSE_URL = 'http://localhost:54819/api/events/stream';
 
 // DOM Elements
 const authOverlay = document.getElementById('auth-overlay');
