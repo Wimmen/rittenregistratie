@@ -16,7 +16,8 @@ let state = {
 
 // Constants
 const BASE_URL = '/api';
-const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+//const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+const SSE_URL = 'http://localhost:54819/api/events/stream';
 
 // DOM Elements
 const authOverlay = document.getElementById('auth-overlay');
@@ -82,7 +83,6 @@ async function initConnection() {
         if (res.ok || res.status === 202) {
             state.connectionId = await res.json();
             connectSSE();
-            refreshCurrentView();
         } else {
             updateConnectionStatus(false);
             setTimeout(initConnection, 3000);
@@ -96,7 +96,10 @@ async function initConnection() {
 function connectSSE() {
     const eventSource = new EventSource(`${SSE_URL}?connectionId=${state.connectionId}`);
 
-    eventSource.onopen = () => updateConnectionStatus(true);
+    eventSource.onopen = () => {
+        updateConnectionStatus(true);
+        refreshCurrentView();
+    }
 
     eventSource.addEventListener('AdminUsersList', (e) => {
         try {
@@ -159,7 +162,7 @@ function updateConnectionStatus(connected) {
 }
 
 async function sendEvent(eventName, data) {
-    if (!state.connectionId) return;
+    if (!state.connected) return;
     await fetch(`${BASE_URL}/events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -299,11 +302,11 @@ function renderExecutedFlows(list) {
     list.forEach(i => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${i.FlowName}</td>
-            <td>${new Date(i.StartTime).toLocaleString()}</td>
+            <td>${i.Name}</td>
+            <td>${new Date(i.Start + 'Z').toLocaleString()}</td>
             <td>${i.Duration}</td>
             <td>${i.UserId || '-'}</td>
-            <td>${i.Status === 'Success' ? '<span class="badge badge-success">Success</span>' : '<span class="badge badge-error">Failed</span>'}</td>
+            <td>${i.Status === 'Failed' ? '<span class="badge badge-error">Failed</span>' : `<span class="badge badge-success">${i.Status}</span>`}</td>
         `;
         tbody.appendChild(tr);
     });

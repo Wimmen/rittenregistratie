@@ -12,7 +12,7 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "SELECT * FROM ExecutedFlows WHERE FlowName LIKE @Search ORDER BY StartTime DESC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                "Query": "SELECT Flows.Name, ExecutedFlows.Id, ExecutedFlows.Start, DATEDIFF(millisecond, ExecutedFlows.Start, ExecutedFlows.LastUpdated) as Duration, ExecutedFlows.UserId, ExecutedFlows.Status FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id WHERE Flows.Name LIKE @Search ORDER BY ExecutedFlows.Id DESC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
                 "Parameters": {
                     "Search": "%${event.search}%",
                     "Offset": "${event.offset}",
@@ -29,7 +29,7 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "SELECT COUNT(*) as Total FROM ExecutedFlows WHERE FlowName LIKE @Search",
+                "Query": "SELECT COUNT(*) as Total FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id WHERE Flows.Name LIKE @Search",
                 "Parameters": {
                     "Search": "%${event.search}%"
                 }

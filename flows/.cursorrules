@@ -1,0 +1,30 @@
+# Flows Guidelines
+
+This directory contains Flow definitions in JSON format. Flows define the business logic of the application.
+
+## File Structure
+
+- **Naming**: `[FlowName].json` (e.g., `SaveMessageFlow.json`).
+
+## JSON Schema Key Elements
+
+- **Name**: Unique name of the flow.
+- **StartStepId**: ID of the first step.
+- **ErrorStepId**: ID of the step to execute on error.
+- **Steps**: Object containing step definitions.
+- **Events**: Array of events that trigger the flow.
+
+## Step Types
+
+- `QueryDatabase`: Execute SQL queries.
+  - Parameters: `QueryType` (Insert/Select/Update), `Query`, `Parameters`.
+- `SendMessageToUser`: Return data/messages to the user.
+
+## Variable Interpolation
+
+- Use `${variableName}` syntax.
+- Common variables: `${event.data}`, `${error}`.
+
+## Syncing
+
+- Run `npm run sync` in the root to apply changes to the database.

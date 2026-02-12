@@ -1,0 +1,36 @@
+# Frontend Guidelines
+
+This directory contains the frontend source code.
+
+## Technology Stack
+
+- **HTML5**: Semantic structure.
+- **CSS3**: Vanilla CSS with custom utility classes (see `styles.css`).
+- **JavaScript**: Vanilla JS (`app.js`).
+
+## Styling Conventions
+
+- **NO Tailwind**: Do not use Tailwind classes. Use the detailed utility classes defined in `styles.css`.
+- **Global Variables**: Use CSS variables for colors (e.g., `--primary-color`, `--text-muted`).
+- **Common Classes**:
+  - Layout: `.container`, `.flex`, `.grid`, `.grid-cols-4`, `.section`
+  - Typography: `.text-center`, `.mb-4`, `.mb-8`
+  - Components: `.btn`, `.btn-primary`, `.btn-secondary`, `.card`
+
+## Structure
+
+- `index.html`: Main landing page (Dutch).
+- `news.html`: News overview.
+- `styles.css`: Global styles.
+- `app.js`: Client-side logic.
+
+## Logic
+
+- All logic is in the `flows` directory.
+- When starting the app first get a connectionId from the server using the `connections` api.
+- Use the connectionId to setup the Server Side Events (SSE) connection.
+  - When the server returns 202 Accepted, the connection is established but the user is not registered.
+  - When the server returns 200 OK, the connection is established and the user is registered or no user is found.
+- Use events to trigger flows using the `events` api.
+- Data is returned as JSON using Server Side Events (SSE).
+- Use the `app.js` file to handle the events.

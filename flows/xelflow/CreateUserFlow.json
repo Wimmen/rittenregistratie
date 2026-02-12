@@ -25,7 +25,7 @@
       "Id": "check-user-exists-step",
       "Type": "Decision",
       "Parameters": {
-        "Condition": "${UserExists.0.Id} NOT EMPTY",
+        "Condition": "${NOT(EMPTY(UserExists.0.Id))}",
         "TrueStepId": "update-user-step",
         "FalseStepId": "create-user-step"
       },
@@ -39,7 +39,7 @@
       "Parameters": {
         "QueryType": "Insert",
         "QueryTextType": "Text",
-        "Query": "INSERT INTO Users (FirstName, LastName, Email, Role, LastLogin, Oid, Disabled) VALUES (@FirstName, @LastName, @Email, 'User', getDate(), @Oid, 0)",
+        "Query": "INSERT INTO Users (FirstName, LastName, Email, LastLogin, Oid, Disabled) VALUES (@FirstName, @LastName, @Email, getDate(), @Oid, 0)",
         "Parameters": {
           "FirstName": "${event.firstName}",
           "LastName": "${event.lastName}",

@@ -30,7 +30,7 @@ async function syncFlows() {
 
         // 2. Find all .json files in current directory
         const flowsDir = __dirname;
-        const files = fs.readdirSync(flowsDir).filter(file => file.endsWith('.json'));
+        const files = fs.readdirSync(flowsDir, { recursive: true }).filter(file => file.endsWith('.json'));
 
         if (files.length === 0) {
             console.log("No .json flow files found to sync.");
