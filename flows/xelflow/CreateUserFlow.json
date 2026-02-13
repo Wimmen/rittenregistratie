@@ -101,7 +101,19 @@
       "Name": "CreateUser",
       "Version": "1.0",
       "Status": "Active",
-      "Validation": "[event.Email NOT EMPTY, event.FirstName NOT EMPTY, event.LastName NOT EMPTY, principal.userId NOT EMPTY]"
+      "Validation": [{
+        "Check": "${NOT(EMPTY(event.Email))}",
+        "Message": "Email is verplicht"
+      }, {
+        "Check": "${NOT(EMPTY(event.FirstName))}",
+        "Message": "Voornaam is verplicht"
+      }, {
+        "Check": "${NOT(EMPTY(event.LastName))}",
+        "Message": "Achternaam is verplicht"
+      }, {
+        "Check": "${NOT(EMPTY(principal.userId))}",
+        "Message": "Gebruiker is verplicht"
+      }]
     }
   ]
 }

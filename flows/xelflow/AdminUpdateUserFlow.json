@@ -56,7 +56,7 @@
             "Version": "1.0",
             "Status": "Active",
             "Roles": ["Admin"],
-            "Validation": ""
+            "Validation": []
         }
     ]
 }
