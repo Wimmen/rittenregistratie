@@ -1,0 +1,80 @@
+{
+    "Id": null,
+    "Name": "AdminUpdateAuthenticationFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "Flow to update an existing authentication",
+    "StartStepId": "update-auth-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "update-auth-step": {
+            "Id": "update-auth-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Update",
+                "QueryTextType": "Text",
+                "Query": "UPDATE Authentications SET Name = @Name, Type = @Type, Parameters = @Parameters WHERE Id = @Id",
+                "Parameters": {
+                    "Name": "${event.name}",
+                    "Type": "${event.type}",
+                    "Parameters": "${event.parameters}",
+                    "Id": "${event.id}"
+                }
+            },
+            "Alias": "updated",
+            "NextStepId": "send-success-step",
+            "ConnectionId": 0
+        },
+        "send-success-step": {
+            "Id": "send-success-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminAuthenticationUpdated",
+                "Data": {
+                    "Message": "Authentication updated successfully",
+                    "Id": "${event.id}",
+                    "Name": "${event.name}"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminAuthenticationUpdateFailed",
+                "Data": {
+                    "Message": "Failed to update authentication",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminUpdateAuthentication",
+            "Version": "1.0",
+            "Status": "Active",
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.id))}",
+                    "Message": "Authentication Id is required"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.name))}",
+                    "Message": "Authentication name is required"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.type))}",
+                    "Message": "Authentication type is required"
+                }
+            ]
+        }
+    ]
+}

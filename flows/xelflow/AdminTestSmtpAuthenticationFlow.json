@@ -1,0 +1,61 @@
+{
+    "Id": null,
+    "Name": "AdminTestSmtpAuthenticationFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "Flow to test a new smtp authentication",
+    "StartStepId": "send-test-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "send-test-step": {
+            "Id": "send-test-step",
+            "Type": "SendEmail",
+            "Parameters": {
+                "To": "info@wimmen.nl",
+                "From": "info@xelflow.com",
+                "Subject": "Test email",
+                "Body": "This is a test email",
+                "IsHtml": false
+            },
+            "Alias": "created",
+            "NextStepId": "send-success-step",
+            "ConnectionId": 1
+        },
+        "send-success-step": {
+            "Id": "send-success-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminTestSmtpAuthenticationSuccess",
+                "Data": {
+                    "Message": "Test email sent successfully"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminTestSmtpAuthenticationFailed",
+                "Data": {
+                    "Message": "Failed to send test email",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminTestSmtpAuthentication",
+            "Version": "1.0",
+            "Status": "Active",
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": []
+        }
+    ]
+}

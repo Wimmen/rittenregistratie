@@ -19,8 +19,8 @@ let state = {
 
 // Constants
 const BASE_URL = '/api';
-//const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
-const SSE_URL = 'http://localhost:54819/api/events/stream';
+const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+//const SSE_URL = 'http://localhost:54819/api/events/stream';
 
 // DOM Elements
 const authOverlay = document.getElementById('auth-overlay');
@@ -186,6 +186,30 @@ function connectSSE() {
     });
 
     eventSource.addEventListener('AdminRoleUpdateFailed', (e) => alert('Role update mislukt'));
+
+    // Authentication Events
+    eventSource.addEventListener('AdminAuthenticationAdded', (e) => {
+        alert('Authentication toegevoegd');
+        document.getElementById('authentication-modal').classList.add('hidden');
+        refreshCurrentView();
+    });
+
+    eventSource.addEventListener('AdminAuthenticationAddFailed', (e) => alert('Authentication toevoegen mislukt'));
+
+    eventSource.addEventListener('AdminAuthenticationUpdated', (e) => {
+        alert('Authentication geüpdatet');
+        document.getElementById('authentication-modal').classList.add('hidden');
+        refreshCurrentView();
+    });
+
+    eventSource.addEventListener('AdminAuthenticationUpdateFailed', (e) => alert('Authentication update mislukt'));
+
+    eventSource.addEventListener('AdminAuthenticationDeleted', (e) => {
+        alert('Authentication verwijderd');
+        refreshCurrentView();
+    });
+
+    eventSource.addEventListener('AdminAuthenticationDeleteFailed', (e) => alert('Authentication verwijderen mislukt'));
 
     eventSource.onerror = () => {
         updateConnectionStatus(false);
@@ -417,9 +441,30 @@ function renderAuthentications(list) {
             <td>${i.Id}</td>
             <td>${i.Name}</td>
             <td>${i.Type}</td>
-            <td>${i.Parameters}</td>
+            <td>${i.Parameters ? (i.Parameters.length > 50 ? i.Parameters.substring(0, 50) + '...' : i.Parameters) : ''}</td>
+            <td>
+                <button class="btn-icon edit-auth-btn" data-id="${i.Id}" title="Bewerken">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button class="btn-icon delete-auth-btn" data-id="${i.Id}" title="Verwijderen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </td>
         `;
         tbody.appendChild(tr);
+
+        // Attach event listeners to the buttons in this row (or do it efficiently after loop)
+        const editBtn = tr.querySelector('.edit-auth-btn');
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openAuthenticationModal(i);
+        });
+
+        const deleteBtn = tr.querySelector('.delete-auth-btn');
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteAuthentication(i.Id);
+        });
     });
 }
 
@@ -474,10 +519,20 @@ function setupModal() {
     document.querySelectorAll('.close-modal').forEach(b => {
         b.addEventListener('click', () => {
             document.getElementById('user-modal').classList.add('hidden');
+            document.getElementById('user-modal').classList.add('hidden');
             document.getElementById('role-modal').classList.add('hidden');
             document.getElementById('key-modal').classList.add('hidden');
+            document.getElementById('authentication-modal').classList.add('hidden');
         });
     });
+
+    document.getElementById('save-auth-btn').addEventListener('click', saveAuthentication);
+
+    // Add Authentication Button Logic
+    const addAuthBtn = document.getElementById('add-authentication-btn');
+    if (addAuthBtn) {
+        addAuthBtn.addEventListener('click', () => openAuthenticationModal());
+    }
 
     document.getElementById('save-user-btn').addEventListener('click', async () => {
         if (!state.currentUser) return;
@@ -625,5 +680,183 @@ async function deleteKey(key) {
         alert('Netwerkfout bij verwijderen key');
     }
 }
+
+// Authentication Logic
+function openAuthenticationModal(auth = null) {
+    const modal = document.getElementById('authentication-modal');
+    const title = document.getElementById('authentication-modal-title');
+    const idInput = document.getElementById('auth-id');
+    const nameInput = document.getElementById('auth-name');
+    const typeInput = document.getElementById('auth-type');
+    const paramsContainer = document.getElementById('auth-parameters-container');
+
+    paramsContainer.innerHTML = '';
+    typeInput.disabled = false;
+
+    if (auth) {
+        title.textContent = 'Authentication Bewerken';
+        idInput.value = auth.Id;
+        nameInput.value = auth.Name;
+        typeInput.value = auth.Type;
+        // typeInput.disabled = true; // Optionally disable type change on edit if backend doesn't support it easily
+        renderAuthParameters(auth.Type, auth.Parameters);
+    } else {
+        title.textContent = 'Authentication Toevoegen';
+        idInput.value = '';
+        nameInput.value = '';
+        typeInput.value = 'SqlServer'; // Default
+        renderAuthParameters('SqlServer', null);
+    }
+
+    modal.classList.remove('hidden');
+
+    typeInput.onchange = () => {
+        renderAuthParameters(typeInput.value, null);
+    };
+}
+
+function renderAuthParameters(type, currentParamsJson) {
+    const container = document.getElementById('auth-parameters-container');
+    container.innerHTML = '';
+
+    let currentParams = {};
+    if (currentParamsJson) {
+        try {
+            currentParams = JSON.parse(currentParamsJson);
+        } catch (e) {
+            console.error('Failed to parse parameters', e);
+        }
+    }
+
+    let fields = [];
+    if (type === 'SqlServer') {
+        fields = [{ name: 'ConnectionString', label: 'Connection String', type: 'text' }];
+    } else if (type === 'Smtp') {
+        fields = [
+            { name: 'Host', label: 'Host', type: 'text' },
+            { name: 'Port', label: 'Port', type: 'number' },
+            { name: 'Username', label: 'Username', type: 'text' },
+            { name: 'Password', label: 'Password', type: 'password' },
+            { name: 'EnableSsl', label: 'Enable SSL', type: 'checkbox' }
+        ];
+    } else if (type === 'Http') {
+        fields = [
+            { name: 'Url', label: 'Url', type: 'text' },
+            { name: 'Method', label: 'Method', type: 'select', options: ['GET', 'POST', 'PUT', 'DELETE'] },
+            { name: 'Headers', label: 'Headers (JSON)', type: 'textarea' },
+            { name: 'Body', label: 'Body (JSON)', type: 'textarea' }
+        ];
+    } else if (type === 'AzureServiceBus') {
+        fields = [
+            { name: 'ConnectionString', label: 'Connection String', type: 'text' },
+            { name: 'QueueOrTopicName', label: 'Queue/Topic Name', type: 'text' },
+            { name: 'IsQueue', label: 'Is Queue', type: 'checkbox' }
+        ];
+    } else if (type === 'Notification') {
+        fields = [
+            { name: 'Subject', label: 'Subject', type: 'text' },
+            { name: 'PublicKey', label: 'Public Key', type: 'textarea' },
+            { name: 'PrivateKey', label: 'Private Key', type: 'textarea' }
+        ];
+    }
+
+    fields.forEach(field => {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+
+        const label = document.createElement('label');
+        label.textContent = field.label;
+        group.appendChild(label);
+
+        let input;
+        if (field.type === 'select') {
+            input = document.createElement('select');
+            input.style.width = '100%';
+            input.style.padding = '12px';
+            input.style.borderRadius = '12px';
+            input.style.border = '1px solid var(--border)';
+            field.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                if (currentParams[field.name] === opt) option.selected = true;
+                input.appendChild(option);
+            });
+        } else if (field.type === 'textarea') {
+            input = document.createElement('textarea');
+            input.style.width = '100%';
+            input.style.padding = '12px';
+            input.style.borderRadius = '12px';
+            input.style.border = '1px solid var(--border)';
+            input.style.minHeight = '100px';
+            input.value = currentParams[field.name] || '';
+        } else if (field.type === 'checkbox') {
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.gap = '12px';
+
+            input = document.createElement('input');
+            input.type = 'checkbox';
+            input.style.width = 'auto';
+            input.checked = currentParams[field.name] === true || currentParams[field.name] === 'true'; // Handle boolean/string
+
+            wrapper.appendChild(input);
+            wrapper.appendChild(label); // Move label inside for checkbox
+            group.innerHTML = ''; // Clear initial label
+            group.appendChild(wrapper);
+        } else {
+            input = document.createElement('input');
+            input.type = field.type;
+            input.value = currentParams[field.name] || '';
+        }
+
+        input.dataset.paramName = field.name;
+        input.dataset.paramType = field.type;
+        if (field.type !== 'checkbox') group.appendChild(input);
+
+        container.appendChild(group);
+    });
+}
+
+async function saveAuthentication() {
+    const id = document.getElementById('auth-id').value;
+    const name = document.getElementById('auth-name').value;
+    const type = document.getElementById('auth-type').value;
+
+    if (!name) return alert('Naam is verplicht');
+
+    const paramsContainer = document.getElementById('auth-parameters-container');
+    const inputs = paramsContainer.querySelectorAll('input, select, textarea');
+    const parameters = {};
+
+    inputs.forEach(input => {
+        const paramName = input.dataset.paramName;
+        if (!paramName) return;
+
+        if (input.type === 'checkbox') {
+            parameters[paramName] = input.checked;
+        } else {
+            parameters[paramName] = input.value;
+        }
+    });
+
+    const paramsJson = JSON.stringify(parameters);
+
+    if (id) {
+        await sendEvent('AdminUpdateAuthentication', { id: id, name: name, type: type, parameters: paramsJson });
+    } else {
+        await sendEvent('AdminAddAuthentication', { name: name, type: type, parameters: paramsJson });
+    }
+}
+
+async function deleteAuthentication(id) {
+    if (!confirm('Weet je zeker dat je deze authentication wilt verwijderen?')) return;
+    await sendEvent('AdminDeleteAuthentication', { id: id });
+}
+
+// Update Render Authentications to include actions
+// We need to override the previous definition or update it. 
+// Since we are appending, we should update the original renderAuthentications function in a separate chunk.
 
 init();

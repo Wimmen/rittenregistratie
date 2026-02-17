@@ -1,0 +1,74 @@
+{
+    "Id": null,
+    "Name": "AdminAddAuthenticationFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "Description": "Flow to add a new authentication",
+    "StartStepId": "create-auth-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "create-auth-step": {
+            "Id": "create-auth-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Insert",
+                "QueryTextType": "Text",
+                "Query": "INSERT INTO Authentications (Name, Type, Parameters) VALUES (@Name, @Type, @Parameters)",
+                "Parameters": {
+                    "Name": "${event.name}",
+                    "Type": "${event.type}",
+                    "Parameters": "${event.parameters}"
+                }
+            },
+            "Alias": "created",
+            "NextStepId": "send-success-step",
+            "ConnectionId": 0
+        },
+        "send-success-step": {
+            "Id": "send-success-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminAuthenticationAdded",
+                "Data": {
+                    "Message": "Authentication added successfully",
+                    "Name": "${event.name}"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminAuthenticationAddFailed",
+                "Data": {
+                    "Message": "Failed to add authentication",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminAddAuthentication",
+            "Version": "1.0",
+            "Status": "Active",
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.name))}",
+                    "Message": "Authentication name is required"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.type))}",
+                    "Message": "Authentication type is required"
+                }
+            ]
+        }
+    ]
+}

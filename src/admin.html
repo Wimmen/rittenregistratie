@@ -168,6 +168,8 @@
                 <div class="toolbar">
                     <input type="text" id="authentications-search" placeholder="Zoek authentications..."
                         class="search-input">
+                    <button id="add-authentication-btn" class="btn btn-primary" style="margin-left: auto;">Add
+                        Authentication</button>
                 </div>
                 <div class="table-container">
                     <table class="data-table">
@@ -177,6 +179,7 @@
                                 <th>Naam</th>
                                 <th>Type</th>
                                 <th>Parameters</th>
+                                <th>Acties</th>
                             </tr>
                         </thead>
                         <tbody id="authentications-list">
@@ -318,6 +321,41 @@
             </div>
         </div>
 
+        <!-- Authentication Modal -->
+        <div id="authentication-modal" class="modal hidden">
+            <div class="modal-content card" style="max-width: 600px;">
+                <div class="modal-header">
+                <h2 id="authentication-modal-title">Authentication Toevoegen</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="auth-name">Naam</label>
+                        <input type="text" id="auth-name" placeholder="Authentication naam">
+                        <input type="hidden" id="auth-id">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-type">Type</label>
+                        <select id="auth-type"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                            <option value="SqlServer">SqlServer</option>
+                            <option value="Smtp">Smtp</option>
+                            <option value="Http">Http</option>
+                            <option value="AzureServiceBus">AzureServiceBus</option>
+                            <option value="Notification">Notification</option>
+                        </select>
+                    </div>
+                    <!-- Dynamic Parameters -->
+                    <div id="auth-parameters-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-auth-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="admin.js"></script>
