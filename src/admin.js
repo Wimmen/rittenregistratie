@@ -9,15 +9,19 @@ let state = {
     pagination: {
         users: { offset: 0, limit: 10, total: 0, search: '' },
         flows: { offset: 0, limit: 10, total: 0, search: '' },
-        executed: { offset: 0, limit: 10, total: 0, search: '' }
+        executed: { offset: 0, limit: 10, total: 0, search: '' },
+        authentications: { offset: 0, limit: 10, total: 0, search: '' },
+        migrations: { offset: 0, limit: 10, total: 0, search: '' },
+        keys: { offset: 0, limit: 10, total: 0, search: '' },
+        roles: { offset: 0, limit: 10, total: 0, search: '' }
     },
     currentUser: null
 };
 
 // Constants
 const BASE_URL = '/api';
-const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
-//const SSE_URL = 'http://localhost:54819/api/events/stream';
+//const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+const SSE_URL = 'http://localhost:54819/api/events/stream';
 
 // DOM Elements
 const authOverlay = document.getElementById('auth-overlay');
@@ -128,6 +132,42 @@ function connectSSE() {
         } catch (err) { console.error(err); }
     });
 
+    eventSource.addEventListener('AdminMigrationsList', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            state.pagination.migrations.total = data.Total;
+            renderMigrations(data.Items);
+            updatePaginationUI('migrations');
+        } catch (err) { console.error(err); }
+    });
+
+    eventSource.addEventListener('AdminAuthenticationsList', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            state.pagination.authentications.total = data.Total;
+            renderAuthentications(data.Items);
+            updatePaginationUI('authentications');
+        } catch (err) { console.error(err); }
+    });
+
+    eventSource.addEventListener('AdminKeysList', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            state.pagination.keys.total = data.Total;
+            renderKeys(data.Items);
+            updatePaginationUI('keys');
+        } catch (err) { console.error(err); }
+    });
+
+    eventSource.addEventListener('AdminRolesList', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            state.pagination.roles.total = data.Total;
+            renderRoles(data.Items);
+            updatePaginationUI('roles');
+        } catch (err) { console.error(err); }
+    });
+
     eventSource.addEventListener('AdminUserLoaded', (e) => {
         const data = JSON.parse(e.data);
         if (data && data.length > 0) openUserModal(data[0]);
@@ -189,6 +229,10 @@ function setupNavigation() {
             if (target === 'view-users') state.view = 'users';
             else if (target === 'view-flows') state.view = 'flows';
             else if (target === 'view-executed') state.view = 'executed';
+            else if (target === 'view-authentications') state.view = 'authentications';
+            else if (target === 'view-migrations') state.view = 'migrations';
+            else if (target === 'view-keys') state.view = 'keys';
+            else if (target === 'view-roles') state.view = 'roles';
 
             refreshCurrentView();
         });
@@ -199,11 +243,15 @@ function refreshCurrentView() {
     if (state.view === 'users') loadUsers();
     else if (state.view === 'flows') loadFlows();
     else if (state.view === 'executed') loadExecutedFlows();
+    else if (state.view === 'authentications') loadAuthentications();
+    else if (state.view === 'migrations') loadMigrations();
+    else if (state.view === 'keys') loadKeys();
+    else if (state.view === 'roles') loadRoles();
 }
 
 // Search & Pagination
 function setupSearch() {
-    ['users', 'flows', 'executed'].forEach(type => {
+    ['users', 'flows', 'executed', 'authentications', 'migrations', 'keys', 'roles'].forEach(type => {
         const input = document.getElementById(`${type}-search`);
         let debounce;
         input.addEventListener('input', (e) => {
@@ -218,7 +266,7 @@ function setupSearch() {
 }
 
 function setupPagination() {
-    ['users', 'flows', 'executed'].forEach(type => {
+    ['users', 'flows', 'executed', 'authentications', 'migrations', 'keys', 'roles'].forEach(type => {
         const container = document.getElementById(`${type}-pagination`);
         container.querySelector('[data-action="prev"]').addEventListener('click', () => {
             if (state.pagination[type].offset > 0) {
@@ -264,6 +312,26 @@ async function loadExecutedFlows() {
     await sendEvent('AdminGetExecutedFlows', { offset: p.offset, limit: p.limit, search: p.search });
 }
 
+async function loadAuthentications() {
+    const p = state.pagination.authentications;
+    await sendEvent('AdminGetAuthentications', { offset: p.offset, limit: p.limit, search: p.search });
+}
+
+async function loadMigrations() {
+    const p = state.pagination.migrations;
+    await sendEvent('AdminGetMigrations', { offset: p.offset, limit: p.limit, search: p.search });
+}
+
+async function loadKeys() {
+    const p = state.pagination.keys;
+    await sendEvent('AdminGetKeys', { offset: p.offset, limit: p.limit, search: p.search });
+}
+
+async function loadRoles() {
+    const p = state.pagination.roles;
+    await sendEvent('AdminGetRoles', { offset: p.offset, limit: p.limit, search: p.search });
+}
+
 // Renders
 function renderUsers(users) {
     const tbody = document.getElementById('users-list');
@@ -274,7 +342,7 @@ function renderUsers(users) {
         tr.innerHTML = `
             <td>${u.FirstName || '-'} ${u.LastName || '-'}</td>
             <td>${u.Email || '-'}</td>
-            <td>${u.Role || 'User'}</td>
+            <td>${u.Roles || '-'}</td>
             <td>${u.Disabled ? '<span class="badge badge-error">Disabled</span>' : '<span class="badge badge-success">Active</span>'}</td>
             <td>${new Date(u.LastLogin).toLocaleDateString() || '-'}</td>
         `;
@@ -312,6 +380,63 @@ function renderExecutedFlows(list) {
     });
 }
 
+function renderMigrations(list) {
+    const tbody = document.getElementById('migrations-list');
+    tbody.innerHTML = '';
+    list.forEach(i => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i.Name}</td>
+            <td>${i.Query}</td>
+            <td>${i.UserId || '-'}</td>
+            <td>${new Date(i.ExecutedAt + 'Z').toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderAuthentications(list) {
+    const tbody = document.getElementById('authentications-list');
+    tbody.innerHTML = '';
+    list.forEach(i => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i.Id}</td>
+            <td>${i.Name}</td>
+            <td>${i.Type}</td>
+            <td>${i.Parameters}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderKeys(list) {
+    const tbody = document.getElementById('keys-list');
+    tbody.innerHTML = '';
+    list.forEach(i => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i.Name}</td>
+            <td>${i.Type}</td>
+            <td>${i.Key}</td>
+            <td>${new Date(i.ValidUntil + 'Z').toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderRoles(list) {
+    const tbody = document.getElementById('roles-list');
+    tbody.innerHTML = '';
+    list.forEach(i => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i.Name}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
 // User Detail Modal
 async function fetchUserDetails(id) {
     await sendEvent('AdminGetUser', { id: id });
@@ -325,7 +450,7 @@ function setupModal() {
     document.getElementById('save-user-btn').addEventListener('click', async () => {
         if (!state.currentUser) return;
 
-        const role = document.getElementById('edit-role').value;
+        const roles = document.getElementById('edit-roles').value;
         const disabled = document.getElementById('edit-disabled').checked;
 
         await sendEvent('AdminUpdateUser', {
@@ -351,10 +476,10 @@ function openUserModal(user) {
             <input type="text" value="${user.Email}" disabled>
         </div>
         <div class="form-group">
-            <label>Rol</label>
-            <select id="edit-role" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
-                <option value="User" ${user.Role === 'User' ? 'selected' : ''}>User</option>
-                <option value="Admin" ${user.Role === 'Admin' ? 'selected' : ''}>Admin</option>
+            <label>Rollen</label>
+            <select id="edit-roles" multiple style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                <option value="User" ${user.Roles.includes('User') ? 'selected' : ''}>User</option>
+                <option value="Admin" ${user.Roles.includes('Admin') ? 'selected' : ''}>Admin</option>
             </select>
         </div>
         <div class="form-group" style="display: flex; align-items: center; gap: 12px;">

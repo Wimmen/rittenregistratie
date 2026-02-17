@@ -1,32 +1,32 @@
 {
     "Id": null,
-    "Name": "AdminGetExecutedFlowsFlow",
+    "Name": "AdminGetRolesFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "get-executed-flows-step",
+    "StartStepId": "get-roles-step",
     "ErrorStepId": "error-step",
     "Steps": {
-        "get-executed-flows-step": {
-            "Id": "get-executed-flows-step",
+        "get-roles-step": {
+            "Id": "get-roles-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Dynamic",
                 "Query": [{
-                    "Sql": "SELECT Flows.Name, ExecutedFlows.Id, ExecutedFlows.Start, DATEDIFF(millisecond, ExecutedFlows.Start, ExecutedFlows.LastUpdated) as Duration, ExecutedFlows.UserId, ExecutedFlows.Status",
+                    "Sql": "SELECT *",
                     "Part": "Select"
                 },
                 {
-                    "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
+                    "Sql": "FROM Roles",
                     "Part": "From"
                 },
                 {
-                    "Sql": "WHERE Flows.Name LIKE @Search",
+                    "Sql": "WHERE Name LIKE @Search",
                     "Part": "Where",
                     "Conditions": "@Search != %%"
                 },
                 {
-                    "Sql": "ORDER BY ExecutedFlows.Id DESC",
+                    "Sql": "ORDER BY Name ASC",
                     "Part": "OrderBy"
                 },
                 {
@@ -39,12 +39,12 @@
                     "Limit": "${event.limit}"
                 }
             },
-            "Alias": "executedFlows",
-            "NextStepId": "count-executed-flows-step",
+            "Alias": "roles",
+            "NextStepId": "count-roles-step",
             "ConnectionId": 0
         },
-        "count-executed-flows-step": {
-            "Id": "count-executed-flows-step",
+        "count-roles-step": {
+            "Id": "count-roles-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
@@ -54,11 +54,11 @@
                     "Part": "Select"
                 },
                 {
-                    "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
+                    "Sql": "FROM Roles",
                     "Part": "From"
                 },
                 {
-                    "Sql": "WHERE Flows.Name LIKE @Search",
+                    "Sql": "WHERE Name LIKE @Search",
                     "Part": "Where",
                     "Conditions": "@Search != %%"
                 }],
@@ -67,16 +67,16 @@
                 }
             },
             "Alias": "count",
-            "NextStepId": "send-executed-flows-step",
+            "NextStepId": "send-roles-step",
             "ConnectionId": 0
         },
-        "send-executed-flows-step": {
-            "Id": "send-executed-flows-step",
+        "send-roles-step": {
+            "Id": "send-roles-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminExecutedFlowsList",
+                "Event": "AdminRolesList",
                 "Data": {
-                    "Items": "${executedFlows}",
+                    "Items": "${roles}",
                     "Total": "${count.0.Total}",
                     "Offset": "${event.offset}",
                     "Limit": "${event.limit}"
@@ -88,9 +88,9 @@
             "Id": "error-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminExecutedFlowsListFailed",
+                "Event": "AdminRolesListFailed",
                 "Data": {
-                    "Message": "Failed to retrieve executed flows",
+                    "Message": "Failed to retrieve roles",
                     "Status": "Failed",
                     "Error": "${error}"
                 }
@@ -101,7 +101,7 @@
     "Events": [
         {
             "Id": null,
-            "Name": "AdminGetExecutedFlows",
+            "Name": "AdminGetRoles",
             "Version": "1.0",
             "Status": "Active",
             "Roles": ["Admin"],

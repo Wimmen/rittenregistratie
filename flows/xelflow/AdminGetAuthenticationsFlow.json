@@ -1,32 +1,32 @@
 {
     "Id": null,
-    "Name": "AdminGetExecutedFlowsFlow",
+    "Name": "AdminGetAuthenticationsFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "get-executed-flows-step",
+    "StartStepId": "get-authentications-step",
     "ErrorStepId": "error-step",
     "Steps": {
-        "get-executed-flows-step": {
-            "Id": "get-executed-flows-step",
+        "get-authentications-step": {
+            "Id": "get-authentications-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Dynamic",
                 "Query": [{
-                    "Sql": "SELECT Flows.Name, ExecutedFlows.Id, ExecutedFlows.Start, DATEDIFF(millisecond, ExecutedFlows.Start, ExecutedFlows.LastUpdated) as Duration, ExecutedFlows.UserId, ExecutedFlows.Status",
+                    "Sql": "SELECT *",
                     "Part": "Select"
                 },
                 {
-                    "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
+                    "Sql": "FROM Authentications",
                     "Part": "From"
                 },
                 {
-                    "Sql": "WHERE Flows.Name LIKE @Search",
+                    "Sql": "WHERE Name LIKE @Search",
                     "Part": "Where",
                     "Conditions": "@Search != %%"
                 },
                 {
-                    "Sql": "ORDER BY ExecutedFlows.Id DESC",
+                    "Sql": "ORDER BY Name ASC",
                     "Part": "OrderBy"
                 },
                 {
@@ -39,12 +39,12 @@
                     "Limit": "${event.limit}"
                 }
             },
-            "Alias": "executedFlows",
-            "NextStepId": "count-executed-flows-step",
+            "Alias": "authentications",
+            "NextStepId": "count-authentications-step",
             "ConnectionId": 0
         },
-        "count-executed-flows-step": {
-            "Id": "count-executed-flows-step",
+        "count-authentications-step": {
+            "Id": "count-authentications-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
@@ -54,11 +54,11 @@
                     "Part": "Select"
                 },
                 {
-                    "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
+                    "Sql": "FROM Authentications",
                     "Part": "From"
                 },
                 {
-                    "Sql": "WHERE Flows.Name LIKE @Search",
+                    "Sql": "WHERE Name LIKE @Search",
                     "Part": "Where",
                     "Conditions": "@Search != %%"
                 }],
@@ -67,16 +67,16 @@
                 }
             },
             "Alias": "count",
-            "NextStepId": "send-executed-flows-step",
+            "NextStepId": "send-authentications-step",
             "ConnectionId": 0
         },
-        "send-executed-flows-step": {
-            "Id": "send-executed-flows-step",
+        "send-authentications-step": {
+            "Id": "send-authentications-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminExecutedFlowsList",
+                "Event": "AdminAuthenticationsList",
                 "Data": {
-                    "Items": "${executedFlows}",
+                    "Items": "${authentications}",
                     "Total": "${count.0.Total}",
                     "Offset": "${event.offset}",
                     "Limit": "${event.limit}"
@@ -88,9 +88,9 @@
             "Id": "error-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminExecutedFlowsListFailed",
+                "Event": "AdminAuthenticationsListFailed",
                 "Data": {
-                    "Message": "Failed to retrieve executed flows",
+                    "Message": "Failed to retrieve authentications",
                     "Status": "Failed",
                     "Error": "${error}"
                 }
@@ -101,7 +101,7 @@
     "Events": [
         {
             "Id": null,
-            "Name": "AdminGetExecutedFlows",
+            "Name": "AdminGetAuthentications",
             "Version": "1.0",
             "Status": "Active",
             "Roles": ["Admin"],

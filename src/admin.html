@@ -43,8 +43,12 @@
 
         <nav class="admin-nav">
             <button class="nav-pill active" data-target="view-users">Users</button>
+            <button class="nav-pill" data-target="view-roles">Roles</button>
             <button class="nav-pill" data-target="view-flows">Flows</button>
             <button class="nav-pill" data-target="view-executed">Executed Flows</button>
+            <button class="nav-pill" data-target="view-migrations">Migrations</button>
+            <button class="nav-pill" data-target="view-authentications">Authentications</button>
+            <button class="nav-pill" data-target="view-keys">Keys</button>
         </nav>
 
         <main class="app-content admin-content">
@@ -60,7 +64,7 @@
                             <tr>
                                 <th>Naam</th>
                                 <th>Email</th>
-                                <th>Rol</th>
+                                <th>Rollen</th>
                                 <th>Status</th>
                                 <th>Laatst gezien</th>
                             </tr>
@@ -132,6 +136,109 @@
                 </div>
             </section>
 
+            <!-- Migrations View -->
+            <section id="view-migrations" class="view">
+                <div class="toolbar">
+                    <input type="text" id="migrations-search" placeholder="Zoek migrations..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>Query</th>
+                                <th>UserId</th>
+                                <th>Executed</th>
+                            </tr>
+                        </thead>
+                        <tbody id="migrations-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="migrations-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Authentications View -->
+            <section id="view-authentications" class="view">
+                <div class="toolbar">
+                    <input type="text" id="authentications-search" placeholder="Zoek authentications..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Naam</th>
+                                <th>Type</th>
+                                <th>Parameters</th>
+                            </tr>
+                        </thead>
+                        <tbody id="authentications-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="authentications-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Keys View -->
+            <section id="view-keys" class="view">
+                <div class="toolbar">
+                    <input type="text" id="keys-search" placeholder="Zoek keys..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>UserId</th>
+                                <th>Type</th>
+                                <th>ValidUntil</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="keys-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <section id="view-roles" class="view">
+                <div class="toolbar">
+                    <input type="text" id="roles-search" placeholder="Zoek roles..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roles-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="roles-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
         </main>
 
         <!-- User Detail Modal -->
