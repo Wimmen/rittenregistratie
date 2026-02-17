@@ -12,7 +12,6 @@ let state = {
         executed: { offset: 0, limit: 10, total: 0, search: '' },
         authentications: { offset: 0, limit: 10, total: 0, search: '' },
         migrations: { offset: 0, limit: 10, total: 0, search: '' },
-        keys: { offset: 0, limit: 10, total: 0, search: '' },
         roles: { offset: 0, limit: 10, total: 0, search: '' }
     },
     currentUser: null
@@ -150,15 +149,6 @@ function connectSSE() {
         } catch (err) { console.error(err); }
     });
 
-    eventSource.addEventListener('AdminKeysList', (e) => {
-        try {
-            const data = JSON.parse(e.data);
-            state.pagination.keys.total = data.Total;
-            renderKeys(data.Items);
-            updatePaginationUI('keys');
-        } catch (err) { console.error(err); }
-    });
-
     eventSource.addEventListener('AdminRolesList', (e) => {
         try {
             const data = JSON.parse(e.data);
@@ -180,6 +170,22 @@ function connectSSE() {
     });
 
     eventSource.addEventListener('AdminUserUpdateFailed', (e) => alert('Update mislukt'));
+
+    eventSource.addEventListener('AdminRoleAdded', (e) => {
+        alert('Role toegevoegd');
+        document.getElementById('role-modal').classList.add('hidden');
+        refreshCurrentView();
+    });
+
+    eventSource.addEventListener('AdminRoleAddFailed', (e) => alert('Role toevoegen mislukt'));
+
+    eventSource.addEventListener('AdminRoleUpdated', (e) => {
+        alert('Role geüpdatet');
+        document.getElementById('role-modal').classList.add('hidden');
+        refreshCurrentView();
+    });
+
+    eventSource.addEventListener('AdminRoleUpdateFailed', (e) => alert('Role update mislukt'));
 
     eventSource.onerror = () => {
         updateConnectionStatus(false);
@@ -237,6 +243,12 @@ function setupNavigation() {
             refreshCurrentView();
         });
     });
+
+    // Role Button
+    document.getElementById('add-role-btn').addEventListener('click', () => openRoleModal());
+
+    // Key Button
+    document.getElementById('add-key-btn').addEventListener('click', () => openKeyModal());
 }
 
 function refreshCurrentView() {
@@ -251,7 +263,7 @@ function refreshCurrentView() {
 
 // Search & Pagination
 function setupSearch() {
-    ['users', 'flows', 'executed', 'authentications', 'migrations', 'keys', 'roles'].forEach(type => {
+    ['users', 'flows', 'executed', 'authentications', 'migrations', 'roles'].forEach(type => {
         const input = document.getElementById(`${type}-search`);
         let debounce;
         input.addEventListener('input', (e) => {
@@ -266,7 +278,7 @@ function setupSearch() {
 }
 
 function setupPagination() {
-    ['users', 'flows', 'executed', 'authentications', 'migrations', 'keys', 'roles'].forEach(type => {
+    ['users', 'flows', 'executed', 'authentications', 'migrations', 'roles'].forEach(type => {
         const container = document.getElementById(`${type}-pagination`);
         container.querySelector('[data-action="prev"]').addEventListener('click', () => {
             if (state.pagination[type].offset > 0) {
@@ -323,8 +335,9 @@ async function loadMigrations() {
 }
 
 async function loadKeys() {
-    const p = state.pagination.keys;
-    await sendEvent('AdminGetKeys', { offset: p.offset, limit: p.limit, search: p.search });
+    const res = await fetch(BASE_URL + '/keys');
+    const data = await res.json();
+    renderKeys(data);
 }
 
 async function loadRoles() {
@@ -416,12 +429,25 @@ function renderKeys(list) {
     list.forEach(i => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${i.Name}</td>
-            <td>${i.Type}</td>
-            <td>${i.Key}</td>
-            <td>${new Date(i.ValidUntil + 'Z').toLocaleString()}</td>
+            <td>${i.name}</td>
+            <td>${i.type}</td>
+            <td>${i.userId}</td>
+            <td>${i.key}</td>
+            <td>${new Date(i.validUntil + 'Z').toLocaleString()}</td>
+            <td>
+                <button class="btn-icon delete-key-btn" data-key="${i.key}" title="Verwijderen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </td>
         `;
         tbody.appendChild(tr);
+    });
+
+    document.querySelectorAll('.delete-key-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteKey(btn.dataset.key);
+        });
     });
 }
 
@@ -430,6 +456,8 @@ function renderRoles(list) {
     tbody.innerHTML = '';
     list.forEach(i => {
         const tr = document.createElement('tr');
+        tr.onclick = () => openRoleModal(i);
+        tr.style.cursor = 'pointer';
         tr.innerHTML = `
             <td>${i.Name}</td>
         `;
@@ -444,21 +472,50 @@ async function fetchUserDetails(id) {
 
 function setupModal() {
     document.querySelectorAll('.close-modal').forEach(b => {
-        b.addEventListener('click', () => document.getElementById('user-modal').classList.add('hidden'));
+        b.addEventListener('click', () => {
+            document.getElementById('user-modal').classList.add('hidden');
+            document.getElementById('role-modal').classList.add('hidden');
+            document.getElementById('key-modal').classList.add('hidden');
+        });
     });
 
     document.getElementById('save-user-btn').addEventListener('click', async () => {
         if (!state.currentUser) return;
 
-        const roles = document.getElementById('edit-roles').value;
+        const roles = Array.from(document.getElementById('edit-roles').selectedOptions).map(o => o.value);
         const disabled = document.getElementById('edit-disabled').checked;
 
         await sendEvent('AdminUpdateUser', {
             id: state.currentUser.Id,
-            role: role,
+            role: roles.join(', '), // Assuming single role string in DB or modify backend to handle array
             disabled: disabled ? 1 : 0
         });
     });
+
+    document.getElementById('save-role-btn').addEventListener('click', async () => {
+        const id = document.getElementById('role-id').value;
+        const name = document.getElementById('role-name').value;
+
+        if (!name) return alert('Role name is required');
+
+        if (id) {
+            await sendEvent('AdminUpdateRole', { id: id, name: name });
+        } else {
+            await sendEvent('AdminAddRole', { name: name });
+        }
+    });
+
+    document.getElementById('save-key-btn').addEventListener('click', async () => {
+        await saveKey();
+    });
+
+    // Listen for Role events
+    /*
+    This cannot be done here because eventSource is in initConnection Scope.
+    We need to add listeners in connectSSE or use a global event bus. 
+    For simplicity, we added listeners in connectSSE but they are not implemented there yet.
+    Let's go back and add them there.
+    */
 }
 
 function openUserModal(user) {
@@ -489,6 +546,84 @@ function openUserModal(user) {
     `;
 
     modal.classList.remove('hidden');
+}
+
+function openRoleModal(role = null) {
+    const modal = document.getElementById('role-modal');
+    const title = document.getElementById('role-modal-title');
+    const idInput = document.getElementById('role-id');
+    const nameInput = document.getElementById('role-name');
+
+    if (role) {
+        title.textContent = 'Role Bewerken';
+        idInput.value = role.Id;
+        nameInput.value = role.Name;
+    } else {
+        title.textContent = 'Role Toevoegen';
+        idInput.value = '';
+        nameInput.value = '';
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function openKeyModal() {
+    const modal = document.getElementById('key-modal');
+    document.getElementById('key-name').value = '';
+    document.getElementById('key-type').value = 'Admin';
+    modal.classList.remove('hidden');
+}
+
+async function saveKey() {
+    const name = document.getElementById('key-name').value;
+    const type = document.getElementById('key-type').value;
+    const userId = document.getElementById('key-user-id').value;
+    const validUntil = document.getElementById('key-valid-until').value;
+
+    if (!name) return alert('Key naam is verplicht');
+    if (!type) return alert('Key type is verplicht');
+
+    try {
+        const res = await fetch(BASE_URL + '/keys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, type, userId, validUntil })
+        });
+
+        if (res.ok) {
+            alert('Key succesvol aangemaakt');
+            document.getElementById('key-modal').classList.add('hidden');
+            if (state.view === 'keys') loadKeys();
+        } else {
+            const err = await res.json();
+            alert('Fout bij aanmaken key: ' + (err.error || 'Onbekende fout'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Netwerkfout bij aanmaken key');
+    }
+}
+
+async function deleteKey(key) {
+    if (!confirm('Weet je zeker dat je deze key wilt verwijderen?')) return;
+
+    try {
+        const res = await fetch(BASE_URL + '/keys', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: key })
+        });
+
+        if (res.ok) {
+            loadKeys();
+        } else {
+            const err = await res.json();
+            alert('Fout bij verwijderen key: ' + (err.error || 'Onbekende fout'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Netwerkfout bij verwijderen key');
+    }
 }
 
 init();

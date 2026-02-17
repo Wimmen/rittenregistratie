@@ -1,0 +1,67 @@
+{
+    "Id": null,
+    "Name": "AdminAddRoleFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "create-role-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "create-role-step": {
+            "Id": "create-role-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Insert",
+                "QueryTextType": "Text",
+                "Query": "INSERT INTO Roles (Name) VALUES (@Name)",
+                "Parameters": {
+                    "Name": "${event.name}"
+                }
+            },
+            "Alias": "created",
+            "NextStepId": "send-success-step",
+            "ConnectionId": 0
+        },
+        "send-success-step": {
+            "Id": "send-success-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminRoleAdded",
+                "Data": {
+                    "Message": "Role added successfully",
+                    "Name": "${event.name}"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminRoleAddFailed",
+                "Data": {
+                    "Message": "Failed to add role",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminAddRole",
+            "Version": "1.0",
+            "Status": "Active",
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.name))}",
+                    "Message": "Role name is required"
+                }
+            ]
+        }
+    ]
+}

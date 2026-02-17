@@ -166,7 +166,8 @@
             <!-- Authentications View -->
             <section id="view-authentications" class="view">
                 <div class="toolbar">
-                    <input type="text" id="authentications-search" placeholder="Zoek authentications..." class="search-input">
+                    <input type="text" id="authentications-search" placeholder="Zoek authentications..."
+                        class="search-input">
                 </div>
                 <div class="table-container">
                     <table class="data-table">
@@ -193,16 +194,18 @@
             <!-- Keys View -->
             <section id="view-keys" class="view">
                 <div class="toolbar">
-                    <input type="text" id="keys-search" placeholder="Zoek keys..." class="search-input">
+                    <button id="add-key-btn" class="btn btn-primary" style="margin-left: auto;">Add Key</button>
                 </div>
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Naam</th>
-                                <th>UserId</th>
                                 <th>Type</th>
-                                <th>ValidUntil</th>
+                                <th>User ID</th>
+                                <th>Key</th>
+                                <th>Valid Until</th>
+                                <th>Acties</th>
                             </tr>
                         </thead>
                         <tbody id="keys-list">
@@ -210,16 +213,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="pagination" id="keys-pagination">
-                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
-                    <span class="page-info">0 - 0 van 0</span>
-                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
-                </div>
             </section>
 
+            <!-- Roles View -->
             <section id="view-roles" class="view">
                 <div class="toolbar">
                     <input type="text" id="roles-search" placeholder="Zoek roles..." class="search-input">
+                    <button id="add-role-btn" class="btn btn-primary" style="margin-left: auto;">Add Role</button>
                 </div>
                 <div class="table-container">
                     <table class="data-table">
@@ -254,6 +254,66 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary close-modal">Sluiten</button>
                     <button id="save-user-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Modal -->
+        <div id="role-modal" class="modal hidden">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h2 id="role-modal-title">Role Toevoegen</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="role-name">Naam</label>
+                        <input type="text" id="role-name" placeholder="Role naam">
+                        <input type="hidden" id="role-id">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-role-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
+        <!-- Key Modal -->
+        <div id="key-modal" class="modal hidden">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h2>Key Toevoegen</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="key-name">Naam</label>
+                        <input type="text" id="key-name" placeholder="Key naam">
+                    </div>
+                    <div class="form-group">
+                        <label for="key-type">Type</label>
+                        <select id="key-type"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                            <option value="Admin">Admin</option>
+                            <option value="ServerSideEvents">ServerSideEvents</option>
+                            <option value="WebHook">WebHook</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="key-user-id">User ID</label>
+                        <input type="number" min="0" step="1" id="key-user-id"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                    </div>
+                    <div class="form-group">
+                        <label for="key-valid-until">Valid until</label>
+                        <input type="datetime-local" id="key-valid-until"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-key-btn" class="btn btn-primary">Opslaan</button>
                 </div>
             </div>
         </div>
