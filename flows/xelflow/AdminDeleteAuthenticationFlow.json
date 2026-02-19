@@ -20,7 +20,7 @@
             },
             "Alias": "deleted",
             "NextStepId": "send-success-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "send-success-step": {
             "Id": "send-success-step",

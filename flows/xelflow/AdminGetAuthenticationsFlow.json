@@ -12,27 +12,29 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Dynamic",
-                "Query": [{
-                    "Sql": "SELECT *",
-                    "Part": "Select"
-                },
-                {
-                    "Sql": "FROM Authentications",
-                    "Part": "From"
-                },
-                {
-                    "Sql": "WHERE Name LIKE @Search",
-                    "Part": "Where",
-                    "Conditions": "@Search != %%"
-                },
-                {
-                    "Sql": "ORDER BY Name ASC",
-                    "Part": "OrderBy"
-                },
-                {
-                    "Sql": "OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
-                    "Part": "Limit"
-                }],
+                "Query": [
+                    {
+                        "Sql": "SELECT *",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM Authentications",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE Name LIKE @Search",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    },
+                    {
+                        "Sql": "ORDER BY Name ASC",
+                        "Part": "OrderBy"
+                    },
+                    {
+                        "Sql": "OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                        "Part": "Limit"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%",
                     "Offset": "${event.offset}",
@@ -41,7 +43,7 @@
             },
             "Alias": "authentications",
             "NextStepId": "count-authentications-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "count-authentications-step": {
             "Id": "count-authentications-step",
@@ -49,26 +51,28 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Dynamic",
-                "Query": [{
-                    "Sql": "SELECT COUNT(*) as Total",
-                    "Part": "Select"
-                },
-                {
-                    "Sql": "FROM Authentications",
-                    "Part": "From"
-                },
-                {
-                    "Sql": "WHERE Name LIKE @Search",
-                    "Part": "Where",
-                    "Conditions": "@Search != %%"
-                }],
+                "Query": [
+                    {
+                        "Sql": "SELECT COUNT(*) as Total",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM Authentications",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE Name LIKE @Search",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%"
                 }
             },
             "Alias": "count",
             "NextStepId": "send-authentications-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "send-authentications-step": {
             "Id": "send-authentications-step",
@@ -104,7 +108,9 @@
             "Name": "AdminGetAuthentications",
             "Version": "1.0",
             "Status": "Active",
-            "Roles": ["Admin"],
+            "Roles": [
+                "Admin"
+            ],
             "Validation": []
         }
     ]

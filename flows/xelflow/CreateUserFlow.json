@@ -19,7 +19,7 @@
       },
       "Alias": "UserExists",
       "NextStepId": "check-user-exists-step",
-      "ConnectionId": 0
+      "AuthenticationId": 0
     },
     "check-user-exists-step": {
       "Id": "check-user-exists-step",
@@ -31,7 +31,7 @@
       },
       "Alias": "UserExistsCheck",
       "NextStepId": "${UserExistsCheck}",
-      "ConnectionId": 0
+      "AuthenticationId": 0
     },
     "create-user-step": {
       "Id": "create-user-step",
@@ -49,7 +49,7 @@
       },
       "Alias": "Created",
       "NextStepId": "success-to-user-step",
-      "ConnectionId": 0
+      "AuthenticationId": 0
     },
     "update-user-step": {
       "Id": "update-user-step",
@@ -67,7 +67,7 @@
       },
       "Alias": "Updated",
       "NextStepId": "success-to-user-step",
-      "ConnectionId": 0
+      "AuthenticationId": 0
     },
     "success-to-user-step": {
       "Id": "success-to-user-step",
@@ -101,19 +101,24 @@
       "Name": "CreateUser",
       "Version": "1.0",
       "Status": "Active",
-      "Validation": [{
-        "Check": "${NOT(EMPTY(event.Email))}",
-        "Message": "Email is verplicht"
-      }, {
-        "Check": "${NOT(EMPTY(event.FirstName))}",
-        "Message": "Voornaam is verplicht"
-      }, {
-        "Check": "${NOT(EMPTY(event.LastName))}",
-        "Message": "Achternaam is verplicht"
-      }, {
-        "Check": "${NOT(EMPTY(principal.userId))}",
-        "Message": "Gebruiker is verplicht"
-      }]
+      "Validation": [
+        {
+          "Check": "${NOT(EMPTY(event.Email))}",
+          "Message": "Email is verplicht"
+        },
+        {
+          "Check": "${NOT(EMPTY(event.FirstName))}",
+          "Message": "Voornaam is verplicht"
+        },
+        {
+          "Check": "${NOT(EMPTY(event.LastName))}",
+          "Message": "Achternaam is verplicht"
+        },
+        {
+          "Check": "${NOT(EMPTY(principal.userId))}",
+          "Message": "Gebruiker is verplicht"
+        }
+      ]
     }
   ]
 }

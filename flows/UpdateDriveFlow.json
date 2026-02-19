@@ -27,7 +27,7 @@
             },
             "Alias": "DriveUpdated",
             "NextStepId": "success-to-user-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "success-to-user-step": {
             "Id": "success-to-user-step",
@@ -61,13 +61,30 @@
             "Name": "UpdateDrive",
             "Version": "1.0",
             "Status": "Active",
-            "Roles": ["User"],
+            "Roles": [
+                "User"
+            ],
             "Validation": [
-                { "Check": "${NOT(EMPTY(event.id))}", "Message": "Rit ID is verplicht" },
-                { "Check": "${NOT(EMPTY(event.date))}", "Message": "Datum is verplicht" },
-                { "Check": "${NOT(EMPTY(event.from))}", "Message": "Van is verplicht" },
-                { "Check": "${NOT(EMPTY(event.to))}", "Message": "Naar is verplicht" },
-                { "Check": "${NOT(EMPTY(event.mileage))}", "Message": "Kilometerstand is verplicht" }
+                {
+                    "Check": "${NOT(EMPTY(event.id))}",
+                    "Message": "Rit ID is verplicht"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.date))}",
+                    "Message": "Datum is verplicht"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.from))}",
+                    "Message": "Van is verplicht"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.to))}",
+                    "Message": "Naar is verplicht"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.mileage))}",
+                    "Message": "Kilometerstand is verplicht"
+                }
             ]
         }
     ]

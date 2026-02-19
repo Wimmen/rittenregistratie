@@ -12,27 +12,29 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Dynamic",
-                "Query": [{
-                    "Sql": "SELECT Flows.Name, ExecutedFlows.Id, ExecutedFlows.Start, DATEDIFF(millisecond, ExecutedFlows.Start, ExecutedFlows.LastUpdated) as Duration, ExecutedFlows.UserId, ExecutedFlows.Status",
-                    "Part": "Select"
-                },
-                {
-                    "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
-                    "Part": "From"
-                },
-                {
-                    "Sql": "WHERE Flows.Name LIKE @Search",
-                    "Part": "Where",
-                    "Conditions": "@Search != %%"
-                },
-                {
-                    "Sql": "ORDER BY ExecutedFlows.Id DESC",
-                    "Part": "OrderBy"
-                },
-                {
-                    "Sql": "OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
-                    "Part": "Limit"
-                }],
+                "Query": [
+                    {
+                        "Sql": "SELECT Flows.Name, ExecutedFlows.Id, ExecutedFlows.Start, DATEDIFF(millisecond, ExecutedFlows.Start, ExecutedFlows.LastUpdated) as Duration, ExecutedFlows.UserId, ExecutedFlows.Status",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE Flows.Name LIKE @Search",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    },
+                    {
+                        "Sql": "ORDER BY ExecutedFlows.Id DESC",
+                        "Part": "OrderBy"
+                    },
+                    {
+                        "Sql": "OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                        "Part": "Limit"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%",
                     "Offset": "${event.offset}",
@@ -41,7 +43,7 @@
             },
             "Alias": "executedFlows",
             "NextStepId": "count-executed-flows-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "count-executed-flows-step": {
             "Id": "count-executed-flows-step",
@@ -49,26 +51,28 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Dynamic",
-                "Query": [{
-                    "Sql": "SELECT COUNT(*) as Total",
-                    "Part": "Select"
-                },
-                {
-                    "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
-                    "Part": "From"
-                },
-                {
-                    "Sql": "WHERE Flows.Name LIKE @Search",
-                    "Part": "Where",
-                    "Conditions": "@Search != %%"
-                }],
+                "Query": [
+                    {
+                        "Sql": "SELECT COUNT(*) as Total",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM ExecutedFlows INNER JOIN Flows ON ExecutedFlows.FlowId = Flows.Id",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE Flows.Name LIKE @Search",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%"
                 }
             },
             "Alias": "count",
             "NextStepId": "send-executed-flows-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "send-executed-flows-step": {
             "Id": "send-executed-flows-step",
@@ -104,7 +108,9 @@
             "Name": "AdminGetExecutedFlows",
             "Version": "1.0",
             "Status": "Active",
-            "Roles": ["Admin"],
+            "Roles": [
+                "Admin"
+            ],
             "Validation": []
         }
     ]

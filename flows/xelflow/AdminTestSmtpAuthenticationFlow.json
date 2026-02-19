@@ -19,7 +19,7 @@
             },
             "Alias": "created",
             "NextStepId": "send-success-step",
-            "ConnectionId": 1
+            "AuthenticationId": 1
         },
         "send-success-step": {
             "Id": "send-success-step",

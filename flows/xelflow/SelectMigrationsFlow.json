@@ -14,7 +14,7 @@
       },
       "Alias": "Migrations",
       "NextStepId": "success-to-user-step",
-      "ConnectionId": 0
+      "AuthenticationId": 0
     },
     "success-to-user-step": {
       "Id": "success-to-user-step",
@@ -46,7 +46,9 @@
       "Name": "SelectMigrations",
       "Version": "1.0",
       "Status": "Active",
-      "Roles": ["Admin"],
+      "Roles": [
+        "Admin"
+      ],
       "Validation": []
     }
   ]
