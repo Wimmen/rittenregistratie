@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Admin - Rittenregistratie</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="xelflow.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="admin-body">
+
+    <div id="auth-overlay" class="auth-overlay hidden">
+        <div class="auth-card">
+            <h1>Admin Toegang</h1>
+            <p>Log in om toegang te krijgen tot het beheerpaneel.</p>
+            <button id="login-btn" class="btn btn-primary">Inloggen</button>
+        </div>
+    </div>
+
+    <div id="app" class="app-container hidden">
+        <header class="app-header admin-header">
+            <div class="header-content">
+                <h1>Admin Paneel</h1>
+                <div class="header-actions">
+                    <a href="index.html" class="btn-text"
+                        style="color: var(--text-secondary); margin-right: 1rem; text-decoration: none;">Naar App</a>
+                    <button id="logout-btn" class="btn-icon" aria-label="Uitloggen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="connection-pill disconnected" id="connection-status">Verbinden...</div>
+        </header>
+
+        <nav class="admin-nav">
+            <button class="nav-pill active" data-target="view-users">Users</button>
+            <button class="nav-pill" data-target="view-roles">Roles</button>
+            <button class="nav-pill" data-target="view-flows">Flows</button>
+            <button class="nav-pill" data-target="view-executed">Executed Flows</button>
+            <button class="nav-pill" data-target="view-migrations">Migrations</button>
+            <button class="nav-pill" data-target="view-authentications">Authentications</button>
+            <button class="nav-pill" data-target="view-keys">Keys</button>
+        </nav>
+
+        <main class="app-content admin-content">
+
+            <!-- Users View -->
+            <section id="view-users" class="view active">
+                <div class="toolbar">
+                    <input type="text" id="users-search" placeholder="Zoek gebruikers..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>Email</th>
+                                <th>Rollen</th>
+                                <th>Status</th>
+                                <th>Laatst gezien</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-list">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="users-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Flows View -->
+            <section id="view-flows" class="view">
+                <div class="toolbar">
+                    <input type="text" id="flows-search" placeholder="Zoek flows..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>Versie</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flows-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination similar to users -->
+                <div class="pagination" id="flows-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Executed Flows View -->
+            <section id="view-executed" class="view">
+                <div class="toolbar">
+                    <input type="text" id="executed-search" placeholder="Zoek executed flows..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Flow</th>
+                                <th>Start Tijd</th>
+                                <th>Duur (ms)</th>
+                                <th>Gebruiker</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="executed-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="executed-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Migrations View -->
+            <section id="view-migrations" class="view">
+                <div class="toolbar">
+                    <input type="text" id="migrations-search" placeholder="Zoek migrations..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>Query</th>
+                                <th>UserId</th>
+                                <th>Executed</th>
+                            </tr>
+                        </thead>
+                        <tbody id="migrations-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="migrations-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Authentications View -->
+            <section id="view-authentications" class="view">
+                <div class="toolbar">
+                    <input type="text" id="authentications-search" placeholder="Zoek authentications..."
+                        class="search-input">
+                    <button id="add-authentication-btn" class="btn btn-primary" style="margin-left: auto;">Add
+                        Authentication</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Naam</th>
+                                <th>Type</th>
+                                <th>Parameters</th>
+                                <th>Acties</th>
+                            </tr>
+                        </thead>
+                        <tbody id="authentications-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="authentications-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+
+            <!-- Keys View -->
+            <section id="view-keys" class="view">
+                <div class="toolbar">
+                    <button id="add-key-btn" class="btn btn-primary" style="margin-left: auto;">Add Key</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                                <th>Type</th>
+                                <th>User ID</th>
+                                <th>Key</th>
+                                <th>Valid Until</th>
+                                <th>Acties</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Roles View -->
+            <section id="view-roles" class="view">
+                <div class="toolbar">
+                    <input type="text" id="roles-search" placeholder="Zoek roles..." class="search-input">
+                    <button id="add-role-btn" class="btn btn-primary" style="margin-left: auto;">Add Role</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Naam</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roles-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="roles-pagination">
+                    <button class="btn-sm" data-action="prev" disabled>&lt;</button>
+                    <span class="page-info">0 - 0 van 0</span>
+                    <button class="btn-sm" data-action="next" disabled>&gt;</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- User Detail Modal -->
+        <div id="user-modal" class="modal hidden">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h2>Gebruiker Details</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="user-detail-content">
+                    <div class="loader"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-user-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Modal -->
+        <div id="role-modal" class="modal hidden">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h2 id="role-modal-title">Role Toevoegen</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="role-name">Naam</label>
+                        <input type="text" id="role-name" placeholder="Role naam">
+                        <input type="hidden" id="role-id">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-role-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
+        <!-- Key Modal -->
+        <div id="key-modal" class="modal hidden">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h2>Key Toevoegen</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="key-name">Naam</label>
+                        <input type="text" id="key-name" placeholder="Key naam">
+                    </div>
+                    <div class="form-group">
+                        <label for="key-type">Type</label>
+                        <select id="key-type"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                            <option value="Admin">Admin</option>
+                            <option value="ServerSideEvents">ServerSideEvents</option>
+                            <option value="WebHook">WebHook</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="key-user-id">User ID</label>
+                        <input type="number" min="0" step="1" id="key-user-id"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                    </div>
+                    <div class="form-group">
+                        <label for="key-valid-until">Valid until</label>
+                        <input type="datetime-local" id="key-valid-until"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-key-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Authentication Modal -->
+        <div id="authentication-modal" class="modal hidden">
+            <div class="modal-content card" style="max-width: 600px;">
+                <div class="modal-header">
+                <h2 id="authentication-modal-title">Authentication Toevoegen</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="auth-name">Naam</label>
+                        <input type="text" id="auth-name" placeholder="Authentication naam">
+                        <input type="hidden" id="auth-id">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-type">Type</label>
+                        <select id="auth-type"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                            <option value="SqlServer">SqlServer</option>
+                            <option value="Smtp">Smtp</option>
+                            <option value="Http">Http</option>
+                            <option value="AzureServiceBus">AzureServiceBus</option>
+                            <option value="Notification">Notification</option>
+                        </select>
+                    </div>
+                    <!-- Dynamic Parameters -->
+                    <div id="auth-parameters-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Sluiten</button>
+                    <button id="save-auth-btn" class="btn btn-primary">Opslaan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="xelflow.js"></script>
+</body>
+
+</html>

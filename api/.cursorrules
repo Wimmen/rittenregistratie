@@ -1,0 +1,20 @@
+# API Guidelines
+
+This directory contains Azure Functions using the Node.js v4 programming model.
+
+## Technology Stack
+
+- **Runtime**: Node.js
+- **Library**: `@azure/functions` (v4)
+
+## File Structure
+
+- `src/functions/*.js`: Individual function files.
+- `index.js`: Entry point (usually empty or exports).
+
+## Instructions
+
+- The API is a proxy to the Xelflow Server Flow Engine.
+- The API adds a layer of security to the Xelflow Server Flow Engine.
+- Usally no extra functions are needed to run the Web application.
+```

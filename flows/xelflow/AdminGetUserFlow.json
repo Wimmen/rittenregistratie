@@ -12,14 +12,14 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "SELECT * FROM Users WHERE Id = @Id",
+                "Query": "SELECT u.*, STRING_AGG(r.Name, ', ') AS Roles FROM Users u LEFT JOIN UserRoles ur ON u.Id = ur.UserId LEFT JOIN Roles r ON ur.RoleId = r.Id WHERE u.Id = @Id GROUP BY u.Id, u.FirstName, u.LastName, u.Email, u.LastLogin, u.Oid, u.Disabled",
                 "Parameters": {
                     "Id": "${event.id}"
                 }
             },
             "Alias": "user",
             "NextStepId": "send-user-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "send-user-step": {
             "Id": "send-user-step",
@@ -50,8 +50,10 @@
             "Name": "AdminGetUser",
             "Version": "1.0",
             "Status": "Active",
-            "Roles": ["Admin"],
-            "Validation": ""
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": []
         }
     ]
 }

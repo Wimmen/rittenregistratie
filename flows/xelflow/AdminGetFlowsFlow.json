@@ -11,8 +11,30 @@
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
-                "QueryTextType": "Text",
-                "Query": "SELECT * FROM Flows WHERE Name LIKE @Search ORDER BY Name ASC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                "QueryTextType": "Dynamic",
+                "Query": [
+                    {
+                        "Sql": "SELECT *",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM Flows",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE Name LIKE @Search",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    },
+                    {
+                        "Sql": "ORDER BY Name ASC",
+                        "Part": "OrderBy"
+                    },
+                    {
+                        "Sql": "OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                        "Part": "Limit"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%",
                     "Offset": "${event.offset}",
@@ -21,22 +43,36 @@
             },
             "Alias": "flows",
             "NextStepId": "count-flows-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "count-flows-step": {
             "Id": "count-flows-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
-                "QueryTextType": "Text",
-                "Query": "SELECT COUNT(*) as Total FROM Flows WHERE Name LIKE @Search",
+                "QueryTextType": "Dynamic",
+                "Query": [
+                    {
+                        "Sql": "SELECT COUNT(*) as Total",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM Flows",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE Name LIKE @Search",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%"
                 }
             },
             "Alias": "count",
             "NextStepId": "send-flows-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "send-flows-step": {
             "Id": "send-flows-step",
@@ -72,8 +108,10 @@
             "Name": "AdminGetFlows",
             "Version": "1.0",
             "Status": "Active",
-            "Roles": ["Admin"],
-            "Validation": ""
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": []
         }
     ]
 }

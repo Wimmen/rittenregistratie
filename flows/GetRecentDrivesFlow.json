@@ -19,7 +19,7 @@
             },
             "Alias": "RecentDrives",
             "NextStepId": "send-list-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "send-list-step": {
             "Id": "send-list-step",
@@ -50,7 +50,10 @@
             "Name": "GetRecentDrives",
             "Version": "1.0",
             "Status": "Active",
-            "Validation": "[principal.userId NOT EMPTY]"
+            "Roles": [
+                "User"
+            ],
+            "Validation": []
         }
     ]
 }

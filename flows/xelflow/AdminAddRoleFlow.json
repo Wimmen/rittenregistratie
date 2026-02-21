@@ -1,25 +1,23 @@
 {
     "Id": null,
-    "Name": "AdminUpdateUserFlow",
+    "Name": "AdminAddRoleFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "update-user-step",
+    "StartStepId": "create-role-step",
     "ErrorStepId": "error-step",
     "Steps": {
-        "update-user-step": {
-            "Id": "update-user-step",
+        "create-role-step": {
+            "Id": "create-role-step",
             "Type": "QueryDatabase",
             "Parameters": {
-                "QueryType": "Update",
+                "QueryType": "Insert",
                 "QueryTextType": "Text",
-                "Query": "UPDATE Users SET Role = @Role, Disabled = @Disabled WHERE Id = @Id",
+                "Query": "INSERT INTO Roles (Name) VALUES (@Name)",
                 "Parameters": {
-                    "Role": "${event.role}",
-                    "Disabled": "${event.disabled}",
-                    "Id": "${event.id}"
+                    "Name": "${event.name}"
                 }
             },
-            "Alias": "updated",
+            "Alias": "created",
             "NextStepId": "send-success-step",
             "AuthenticationId": 0
         },
@@ -27,10 +25,10 @@
             "Id": "send-success-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdated",
+                "Event": "AdminRoleAdded",
                 "Data": {
-                    "Message": "User updated successfully",
-                    "Id": "${event.id}"
+                    "Message": "Role added successfully",
+                    "Name": "${event.name}"
                 }
             },
             "NextStepId": null
@@ -39,9 +37,9 @@
             "Id": "error-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdateFailed",
+                "Event": "AdminRoleAddFailed",
                 "Data": {
-                    "Message": "Failed to update user",
+                    "Message": "Failed to add role",
                     "Status": "Failed",
                     "Error": "${error}"
                 }
@@ -52,13 +50,18 @@
     "Events": [
         {
             "Id": null,
-            "Name": "AdminUpdateUser",
+            "Name": "AdminAddRole",
             "Version": "1.0",
             "Status": "Active",
             "Roles": [
                 "Admin"
             ],
-            "Validation": []
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.name))}",
+                    "Message": "Role name is required"
+                }
+            ]
         }
     ]
 }

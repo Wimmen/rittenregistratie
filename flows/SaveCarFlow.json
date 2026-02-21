@@ -21,7 +21,7 @@
             },
             "Alias": "CarSaved",
             "NextStepId": "success-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "success-step": {
             "Id": "success-step",
@@ -55,7 +55,19 @@
             "Name": "SaveCar",
             "Version": "1.0",
             "Status": "Active",
-            "Validation": "[principal.userId NOT EMPTY, event.brand NOT EMPTY, event.licensePlate NOT EMPTY]"
+            "Roles": [
+                "User"
+            ],
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.brand))}",
+                    "Message": "Merk is verplicht"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.licensePlate))}",
+                    "Message": "Kenteken is verplicht"
+                }
+            ]
         }
     ]
 }

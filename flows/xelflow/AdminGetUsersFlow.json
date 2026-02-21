@@ -11,8 +11,34 @@
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
-                "QueryTextType": "Text",
-                "Query": "SELECT * FROM Users WHERE (FirstName LIKE @Search OR LastName LIKE @Search OR Email LIKE @Search) ORDER BY LastLogin DESC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                "QueryTextType": "Dynamic",
+                "Query": [
+                    {
+                        "Sql": "SELECT Users.Id, Users.FirstName, Users.LastName, Users.Email, Users.LastLogin, Users.Oid, Users.Disabled, STRING_AGG(Roles.Name, ', ') AS Roles ",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM Users LEFT JOIN UserRoles ON Users.Id = UserRoles.UserId LEFT JOIN Roles ON UserRoles.RoleId = Roles.Id",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE (FirstName LIKE @Search OR LastName LIKE @Search OR Email LIKE @Search)",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    },
+                    {
+                        "Sql": "GROUP BY Users.Id, Users.FirstName, Users.LastName, Users.Email, Users.LastLogin, Users.Oid, Users.Disabled",
+                        "Part": "GroupBy"
+                    },
+                    {
+                        "Sql": "ORDER BY LastLogin DESC",
+                        "Part": "OrderBy"
+                    },
+                    {
+                        "Sql": "OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
+                        "Part": "Limit"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%",
                     "Offset": "${event.offset}",
@@ -21,22 +47,36 @@
             },
             "Alias": "users",
             "NextStepId": "count-users-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "count-users-step": {
             "Id": "count-users-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
-                "QueryTextType": "Text",
-                "Query": "SELECT COUNT(*) as Total FROM Users WHERE (FirstName LIKE @Search OR LastName LIKE @Search OR Email LIKE @Search)",
+                "QueryTextType": "Dynamic",
+                "Query": [
+                    {
+                        "Sql": "SELECT COUNT(*) as Total",
+                        "Part": "Select"
+                    },
+                    {
+                        "Sql": "FROM Users",
+                        "Part": "From"
+                    },
+                    {
+                        "Sql": "WHERE (FirstName LIKE @Search OR LastName LIKE @Search OR Email LIKE @Search)",
+                        "Part": "Where",
+                        "Conditions": "@Search != %%"
+                    }
+                ],
                 "Parameters": {
                     "Search": "%${event.search}%"
                 }
             },
             "Alias": "count",
             "NextStepId": "send-users-step",
-            "ConnectionId": 0
+            "AuthenticationId": 0
         },
         "send-users-step": {
             "Id": "send-users-step",
@@ -72,8 +112,10 @@
             "Name": "AdminGetUsers",
             "Version": "1.0",
             "Status": "Active",
-            "Roles": ["Admin"],
-            "Validation": ""
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": []
         }
     ]
 }

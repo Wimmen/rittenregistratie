@@ -1,25 +1,24 @@
 {
     "Id": null,
-    "Name": "AdminUpdateUserFlow",
+    "Name": "AdminDeleteAuthenticationFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "update-user-step",
+    "Description": "Flow to delete an authentication",
+    "StartStepId": "delete-auth-step",
     "ErrorStepId": "error-step",
     "Steps": {
-        "update-user-step": {
-            "Id": "update-user-step",
+        "delete-auth-step": {
+            "Id": "delete-auth-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Update",
                 "QueryTextType": "Text",
-                "Query": "UPDATE Users SET Role = @Role, Disabled = @Disabled WHERE Id = @Id",
+                "Query": "DELETE FROM Authentications WHERE Id = @Id",
                 "Parameters": {
-                    "Role": "${event.role}",
-                    "Disabled": "${event.disabled}",
                     "Id": "${event.id}"
                 }
             },
-            "Alias": "updated",
+            "Alias": "deleted",
             "NextStepId": "send-success-step",
             "AuthenticationId": 0
         },
@@ -27,9 +26,9 @@
             "Id": "send-success-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdated",
+                "Event": "AdminAuthenticationDeleted",
                 "Data": {
-                    "Message": "User updated successfully",
+                    "Message": "Authentication deleted successfully",
                     "Id": "${event.id}"
                 }
             },
@@ -39,9 +38,9 @@
             "Id": "error-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdateFailed",
+                "Event": "AdminAuthenticationDeleteFailed",
                 "Data": {
-                    "Message": "Failed to update user",
+                    "Message": "Failed to delete authentication",
                     "Status": "Failed",
                     "Error": "${error}"
                 }
@@ -52,13 +51,18 @@
     "Events": [
         {
             "Id": null,
-            "Name": "AdminUpdateUser",
+            "Name": "AdminDeleteAuthentication",
             "Version": "1.0",
             "Status": "Active",
             "Roles": [
                 "Admin"
             ],
-            "Validation": []
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.id))}",
+                    "Message": "Authentication Id is required"
+                }
+            ]
         }
     ]
 }

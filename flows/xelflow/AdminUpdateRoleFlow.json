@@ -1,21 +1,20 @@
 {
     "Id": null,
-    "Name": "AdminUpdateUserFlow",
+    "Name": "AdminUpdateRoleFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "update-user-step",
+    "StartStepId": "update-role-step",
     "ErrorStepId": "error-step",
     "Steps": {
-        "update-user-step": {
-            "Id": "update-user-step",
+        "update-role-step": {
+            "Id": "update-role-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Update",
                 "QueryTextType": "Text",
-                "Query": "UPDATE Users SET Role = @Role, Disabled = @Disabled WHERE Id = @Id",
+                "Query": "UPDATE Roles SET Name = @Name WHERE Id = @Id",
                 "Parameters": {
-                    "Role": "${event.role}",
-                    "Disabled": "${event.disabled}",
+                    "Name": "${event.name}",
                     "Id": "${event.id}"
                 }
             },
@@ -27,10 +26,11 @@
             "Id": "send-success-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdated",
+                "Event": "AdminRoleUpdated",
                 "Data": {
-                    "Message": "User updated successfully",
-                    "Id": "${event.id}"
+                    "Message": "Role updated successfully",
+                    "Id": "${event.id}",
+                    "Name": "${event.name}"
                 }
             },
             "NextStepId": null
@@ -39,9 +39,9 @@
             "Id": "error-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdateFailed",
+                "Event": "AdminRoleUpdateFailed",
                 "Data": {
-                    "Message": "Failed to update user",
+                    "Message": "Failed to update role",
                     "Status": "Failed",
                     "Error": "${error}"
                 }
@@ -52,13 +52,22 @@
     "Events": [
         {
             "Id": null,
-            "Name": "AdminUpdateUser",
+            "Name": "AdminUpdateRole",
             "Version": "1.0",
             "Status": "Active",
             "Roles": [
                 "Admin"
             ],
-            "Validation": []
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.id))}",
+                    "Message": "Role ID is required"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.name))}",
+                    "Message": "Role name is required"
+                }
+            ]
         }
     ]
 }

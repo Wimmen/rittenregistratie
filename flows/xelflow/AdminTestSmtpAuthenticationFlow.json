@@ -1,36 +1,33 @@
 {
     "Id": null,
-    "Name": "AdminUpdateUserFlow",
+    "Name": "AdminTestSmtpAuthenticationFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "update-user-step",
+    "Description": "Flow to test a new smtp authentication",
+    "StartStepId": "send-test-step",
     "ErrorStepId": "error-step",
     "Steps": {
-        "update-user-step": {
-            "Id": "update-user-step",
-            "Type": "QueryDatabase",
+        "send-test-step": {
+            "Id": "send-test-step",
+            "Type": "SendEmail",
             "Parameters": {
-                "QueryType": "Update",
-                "QueryTextType": "Text",
-                "Query": "UPDATE Users SET Role = @Role, Disabled = @Disabled WHERE Id = @Id",
-                "Parameters": {
-                    "Role": "${event.role}",
-                    "Disabled": "${event.disabled}",
-                    "Id": "${event.id}"
-                }
+                "To": "info@wimmen.nl",
+                "From": "info@xelflow.com",
+                "Subject": "Test email",
+                "Body": "This is a test email",
+                "IsHtml": false
             },
-            "Alias": "updated",
+            "Alias": "created",
             "NextStepId": "send-success-step",
-            "AuthenticationId": 0
+            "AuthenticationId": 1
         },
         "send-success-step": {
             "Id": "send-success-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdated",
+                "Event": "AdminTestSmtpAuthenticationSuccess",
                 "Data": {
-                    "Message": "User updated successfully",
-                    "Id": "${event.id}"
+                    "Message": "Test email sent successfully"
                 }
             },
             "NextStepId": null
@@ -39,9 +36,9 @@
             "Id": "error-step",
             "Type": "SendMessageToUser",
             "Parameters": {
-                "Event": "AdminUserUpdateFailed",
+                "Event": "AdminTestSmtpAuthenticationFailed",
                 "Data": {
-                    "Message": "Failed to update user",
+                    "Message": "Failed to send test email",
                     "Status": "Failed",
                     "Error": "${error}"
                 }
@@ -52,7 +49,7 @@
     "Events": [
         {
             "Id": null,
-            "Name": "AdminUpdateUser",
+            "Name": "AdminTestSmtpAuthentication",
             "Version": "1.0",
             "Status": "Active",
             "Roles": [

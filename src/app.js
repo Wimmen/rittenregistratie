@@ -16,7 +16,8 @@ let state = {
 
 // Constants
 const BASE_URL = '/api';
-const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream'; // External SSE URL
+const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+//const SSE_URL = 'http://localhost:54819/api/events/stream'; // External SSE URL
 
 // DOM Elements
 const authOverlay = document.getElementById('auth-overlay');
@@ -146,8 +147,6 @@ async function initConnection() {
             // Requirement: "When a 202 is received... tab should become active and user created"
             if (res.status === 202) {
                 handleNewConnection();
-            } else {
-                requestInitialData();
             }
         } else {
             console.error('Connection failed', res);
@@ -242,6 +241,7 @@ function connectSSE() {
 function updateConnectionStatus(connected) {
     state.connected = connected;
     if (connected) {
+        requestInitialData();
         connectionStatus.textContent = 'Verbonden';
         connectionStatus.classList.remove('disconnected');
         connectionStatus.classList.add('connected');

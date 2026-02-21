@@ -1,0 +1,84 @@
+
+const { app } = require('@azure/functions');
+
+app.http('keys', {
+  methods: ['GET', 'POST', 'DELETE'],
+  handler: async (req, context) => {
+
+  context.log("Keys GET proxy gestart");
+
+  const externalUrl = process.env.XELFLOW_API_URL + "/api/keys";
+
+  // Haal SWA identity header op
+  const principalHeader = req.headers.get("x-ms-client-principal");
+  context.log(`Principal header aanwezig: ${!!principalHeader}`);
+
+  // Haal API-key op (vanuit client of SWA config)
+  const apiKey = process.env.XELFLOW_API_KEY;
+  context.log(`API key aanwezig: ${!!apiKey}`);
+
+  // Bouw headers voor de externe API
+  const headers = {
+    "Content-Type": "application/json"
+  };
+
+  if (principalHeader) {
+    headers["x-ms-client-principal"] = principalHeader;
+  }
+
+  context.log(`Headers gebouwd: ${Object.keys(headers).join(', ')}`);
+
+  if (req.method === 'POST') {
+    const body = await req.json();
+    const externalResponse = await fetch(externalUrl + '/' + apiKey, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body)
+    });
+
+    return {
+      status: externalResponse.status,
+      body: await externalResponse.json()
+    };
+  }
+
+  if (req.method === 'DELETE') {
+    const body = await req.json();
+    const externalResponse = await fetch(externalUrl + '/' + apiKey + '/' + body.key, {
+      method: "DELETE",
+      headers
+    });
+
+    return {
+      status: externalResponse.status,
+      body: await externalResponse.json()
+    };
+  }
+
+  // Verstuur POST naar externe backend
+  context.log(`Start fetch naar: ${externalUrl + '/' + apiKey}`);
+  const externalResponse = await fetch(externalUrl + '/' + apiKey, {
+    method: "GET",
+    headers
+  });
+
+  context.log(`Externe response status: ${externalResponse.status}`);
+  if (externalResponse.status === 200) {
+    const responseText = await externalResponse.text();
+    context.log(`ConnectionId: ${responseText}`);
+    return {
+      status: externalResponse.status,
+      body: responseText
+    };
+  } else {
+    const responseText = await externalResponse.text();
+    context.log(`Response text: ${responseText}`);
+    // Stuur response terug naar de client
+    return {
+      status: externalResponse.status,
+      body:  {
+        error: responseText
+      }
+    };
+  }
+}});
