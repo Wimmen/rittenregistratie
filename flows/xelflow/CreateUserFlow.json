@@ -25,7 +25,7 @@
       "Id": "check-user-exists-step",
       "Type": "Decision",
       "Parameters": {
-        "Condition": "${UserExists.0.Id} NOT EMPTY",
+        "Condition": "${NOT(EMPTY(UserExists.0.Id))}",
         "TrueStepId": "update-user-step",
         "FalseStepId": "create-user-step"
       },
