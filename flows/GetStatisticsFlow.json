@@ -15,8 +15,8 @@
                 "Query": "SELECT Id as id, DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Distance as distance, Type as type, Description as description FROM Drives WHERE UserId = @UserId AND YEAR(DriveDate) = @Year AND MONTH(DriveDate) = @Month ORDER BY DriveDate ASC, Mileage ASC",
                 "Parameters": {
                     "UserId": "${principal.userId}",
-                    "Year": "${event.data.Year}",
-                    "Month": "${event.data.Month}"
+                    "Year": "${event.Year}",
+                    "Month": "${event.Month}"
                 }
             },
             "Alias": "Statistics",

@@ -11,13 +11,14 @@ let state = {
     addresses: new Set(),
     connected: false,
     editingId: null,
+    editingIndex: null,
     car: { brand: '', licensePlate: '' }
 };
 
 // Constants
 const BASE_URL = '/api';
-//const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
-const SSE_URL = 'http://localhost:54819/api/events/stream'; // External SSE URL
+const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+//const SSE_URL = 'http://localhost:54819/api/events/stream'; // External SSE URL
 
 // DOM Elements
 const authOverlay = document.getElementById('auth-overlay');
@@ -96,6 +97,31 @@ function showApp() {
 
     // Set today's date
     document.getElementById('date').valueAsDate = new Date();
+}
+
+// Connection & Data
+async function initConnection() {
+    try {
+        const res = await fetch(`${BASE_URL}/connections`);
+        if (res.ok || res.status === 202) {
+            state.connectionId = await res.json();
+            connectSSE();
+
+            // If 202, it means we are connected but maybe first time setup is needed or we want to force profile check
+            // Requirement: "When a 202 is received... tab should become active and user created"
+            if (res.status === 202) {
+                handleNewConnection();
+            }
+        } else {
+            console.error('Connection failed', res);
+            updateConnectionStatus(false);
+            setTimeout(initConnection, 3000);
+        }
+    } catch (e) {
+        console.error('Connection init failed', e);
+        updateConnectionStatus(false);
+        setTimeout(initConnection, 3000);
+    }
 }
 
 // Event Listeners
@@ -224,7 +250,10 @@ function connectSSE() {
     });
 
     eventSource.addEventListener('DriveUpdated', (e) => {
-        handleSuccess('Rit succesvol bijgewerkt!');
+        if (state.editingId) {
+            state.editingId = null;
+            handleSuccess('Rit succesvol bijgewerkt!');
+        }
     });
 
     eventSource.addEventListener('UserCreationSuccess', (e) => {
@@ -380,6 +409,7 @@ function formatDate(dateStr) {
 }
 
 function editDrive(drive, index) {
+    state.editingIndex = index;
     state.editingId = drive.id;
     state.lastMileage = state.sortedDrives.length > index + 1 ? state.sortedDrives[index + 1].mileage : 0;
 
@@ -387,7 +417,7 @@ function editDrive(drive, index) {
     document.getElementById('date').value = drive.date.split('T')[0];
     document.getElementById('from').value = drive.from;
     document.getElementById('to').value = drive.to;
-    document.getElementById('prev-mileage').value = state.lastMileage;
+    prevMileageEl.textContent = state.lastMileage + ' km';
     document.getElementById('current-mileage').value = drive.mileage;
     document.getElementById('description').value = drive.description || '';
 
@@ -405,6 +435,7 @@ function editDrive(drive, index) {
 
 function resetForm() {
     state.editingId = null;
+    state.editingIndex = null;
     driveForm.reset();
     document.getElementById('date').valueAsDate = new Date();
     document.querySelector('.loader').classList.add('hidden');
@@ -447,6 +478,14 @@ function setupForm() {
 
         const eventName = state.editingId ? 'UpdateDrive' : 'RegisterDrive';
         await sendEvent(eventName, payload);
+
+        if (state.editingIndex) {
+            const nextDrive = state.sortedDrives[state.editingIndex - 1];
+            if (nextDrive) {
+                nextDrive.distance = nextDrive.mileage - currentMileage;
+                await sendEvent('UpdateDrive', nextDrive);
+            }
+        }
 
         // Timeout override if no response
         setTimeout(() => {
