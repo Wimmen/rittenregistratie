@@ -1,0 +1,60 @@
+{
+  "Id": null,
+  "Name": "LogXelflowEventsFlow",
+  "Version": "1.0",
+  "Status": "Active",
+  "StartStepId": "",
+  "ErrorStepId": "",
+  "Steps": { },
+  "Events": [
+    {
+      "Id": null,
+      "Name": "XelflowConnectionStarted",
+      "Version": "1.0",
+      "Status": "Active",
+      "Validation": []
+    },
+    {
+      "Id": null,
+      "Name": "XelflowConnectionEnded",
+      "Version": "1.0",
+      "Status": "Active",
+      "Validation": []
+    },
+    {
+      "Id": null,
+      "Name": "XelflowFlowSaved",
+      "Version": "1.0",
+      "Status": "Active",
+      "Validation": []
+    },
+    {
+      "Id": null,
+      "Name": "XelflowKeyCreated",
+      "Version": "1.0",
+      "Status": "Active",
+      "Validation": []
+    },
+    {
+      "Id": null,
+      "Name": "XelflowKeyCreated",
+      "Version": "1.0",
+      "Status": "Active",
+      "Validation": []
+    },
+    {
+      "Id": null,
+      "Name": "XelflowKeyDeleted",
+      "Version": "1.0",
+      "Status": "Active",
+      "Validation": []
+    },
+    {
+      "Id": null,
+      "Name": "XelflowMigrationExecuted",
+      "Version": "1.0",
+      "Status": "Active",
+      "Validation": []
+    }
+  ]
+}

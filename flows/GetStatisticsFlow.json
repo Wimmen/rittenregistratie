@@ -1,0 +1,70 @@
+{
+    "Id": null,
+    "Name": "GetStatisticsFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-stats-step",
+    "ErrorStepId": "error-to-user-step",
+    "Steps": {
+        "get-stats-step": {
+            "Id": "get-stats-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT Id as id, DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Distance as distance, Type as type, Description as description FROM Drives WHERE UserId = @UserId AND YEAR(DriveDate) = @Year AND MONTH(DriveDate) = @Month ORDER BY DriveDate ASC, Mileage ASC",
+                "Parameters": {
+                    "UserId": "${principal.userId}",
+                    "Year": "${event.data.Year}",
+                    "Month": "${event.data.Month}"
+                }
+            },
+            "Alias": "Statistics",
+            "NextStepId": "send-list-step",
+            "AuthenticationId": 0
+        },
+        "send-list-step": {
+            "Id": "send-list-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "StatisticsList",
+                "Data": "${Statistics}"
+            },
+            "NextStepId": null
+        },
+        "error-to-user-step": {
+            "Id": "error-to-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "GetStatisticsFailed",
+                "Data": {
+                    "Message": "Failed to retrieve statistics",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "GetStatistics",
+            "Version": "1.0",
+            "Status": "Active",
+            "Roles": [
+                "User"
+            ],
+            "Validation": [
+                {
+                    "Field": "Year",
+                    "Type": "Required"
+                },
+                {
+                    "Field": "Month",
+                    "Type": "Required"
+                }
+            ]
+        }
+    ]
+}

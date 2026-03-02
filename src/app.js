@@ -16,8 +16,8 @@ let state = {
 
 // Constants
 const BASE_URL = '/api';
-const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
-//const SSE_URL = 'http://localhost:54819/api/events/stream'; // External SSE URL
+//const SSE_URL = 'https://sanme.azurewebsites.net/api/events/stream';
+const SSE_URL = 'http://localhost:54819/api/events/stream'; // External SSE URL
 
 // DOM Elements
 const authOverlay = document.getElementById('auth-overlay');
@@ -81,15 +81,7 @@ async function checkAuth() {
         }
     } catch (e) {
         console.error('Auth check failed', e);
-        // Fallback for local dev without generic auth provider
-        if (location.hostname === 'localhost') {
-            console.log('Localhost detected, bypassing auth for dev');
-            state.principal = { userId: 'dev-user', userDetails: 'Developer' };
-            showApp();
-            initConnection();
-        } else {
-            showLogin();
-        }
+        showLogin();
     }
 }
 
@@ -131,33 +123,63 @@ function setupNavigation() {
 
             views.forEach(view => view.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
+
+            if (targetId === 'view-history') {
+                setupHistoryTabs();
+            }
         });
     });
 }
 
-// Connection & Data
-async function initConnection() {
-    try {
-        const res = await fetch(`${BASE_URL}/connections`);
-        if (res.ok || res.status === 202) {
-            state.connectionId = await res.json();
-            connectSSE();
+function setupHistoryTabs() {
+    const tabs = document.querySelectorAll('.history-tab');
+    tabs.forEach(tab => {
+        tab.onclick = () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
 
-            // If 202, it means we are connected but maybe first time setup is needed or we want to force profile check
-            // Requirement: "When a 202 is received... tab should become active and user created"
-            if (res.status === 202) {
-                handleNewConnection();
+            const targetId = tab.dataset.tab;
+            document.querySelectorAll('.history-tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+
+            if (targetId === 'history-stats') {
+                initStatsControls();
             }
-        } else {
-            console.error('Connection failed', res);
-            updateConnectionStatus(false);
-            setTimeout(initConnection, 3000);
+        };
+    });
+}
+
+function initStatsControls() {
+    const yearSelect = document.getElementById('stats-year');
+    const monthSelect = document.getElementById('stats-month');
+    const loadBtn = document.getElementById('load-stats-btn');
+
+    if (yearSelect.options.length === 0) {
+        const currentYear = new Date().getFullYear();
+        for (let y = currentYear; y >= currentYear - 5; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
         }
-    } catch (e) {
-        console.error('Connection failed', e);
-        updateConnectionStatus(false);
-        setTimeout(initConnection, 3000);
+        monthSelect.value = new Date().getMonth() + 1;
     }
+
+    loadBtn.onclick = () => loadStatistics();
+
+    // Copy buttons
+    document.querySelectorAll('.btn-copy').forEach(btn => {
+        btn.onclick = () => copyToClipboard(btn.dataset.copy);
+    });
+}
+
+async function loadStatistics() {
+    const year = document.getElementById('stats-year').value;
+    const month = document.getElementById('stats-month').value;
+    const resultsContainer = document.getElementById('stats-results');
+
+    resultsContainer.classList.add('hidden');
+    await sendEvent('GetStatistics', { Year: parseInt(year), Month: parseInt(month) });
 }
 
 function connectSSE() {
@@ -177,8 +199,28 @@ function connectSSE() {
         } catch (err) { console.error('Error parsing RecentDrivesList', err); }
     });
 
+    eventSource.addEventListener('DriveLocationsList', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            handleDriveLocations(data);
+        } catch (err) { console.error('Error parsing DriveLocationsList', err); }
+    });
+
+    eventSource.addEventListener('StatisticsList', (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            renderStatistics(data);
+        } catch (err) { console.error('Error parsing StatisticsList', err); }
+    });
+
+
     eventSource.addEventListener('DriveRegistered', (e) => {
         handleSuccess('Rit succesvol opgeslagen!');
+    });
+
+    eventSource.addEventListener('DriveRegistrationFailed', (e) => {
+        var error = JSON.parse(e.data);
+        alert(error.Error);
     });
 
     eventSource.addEventListener('DriveUpdated', (e) => {
@@ -189,8 +231,9 @@ function connectSSE() {
         console.log('User created or already exists');
     });
 
-    eventSource.addEventListener('CarTableCreated', (e) => {
-        console.log('Car table ready');
+    eventSource.addEventListener('CarSaveError', (e) => {
+        var error = JSON.parse(e.data);
+        alert(error.Error);
     });
 
     eventSource.addEventListener('CarLoaded', (e) => {
@@ -255,10 +298,15 @@ function updateConnectionStatus(connected) {
 // Logic
 function requestInitialData() {
     // We trigger a flow that returns the list of drives
-    // Ideally this flow "GetRecentDrives" is triggered by an event
+    sendEvent('GetDriveLocations', {});
     sendEvent('GetRecentDrives', {});
     sendEvent('GetUser', {});
     sendEvent('GetCar', {});
+}
+
+function handleDriveLocations(locations) {
+    state.addresses = new Set(locations.map(location => location.location));
+    renderAddressList();
 }
 
 function handleRecentDrives(drives) {
@@ -282,14 +330,6 @@ function handleRecentDrives(drives) {
 
     // Render list
     renderDrivesList(state.sortedDrives);
-
-    // Update addresses
-    state.addresses = new Set();
-    state.recentDrives.forEach(d => {
-        if (d.from) state.addresses.add(d.from);
-        if (d.to) state.addresses.add(d.to);
-    });
-    renderAddressList();
 }
 
 function renderDrivesList(drives) {
@@ -534,6 +574,89 @@ if (profileForm) {
             lastName: lastName,
             email: email
         });
+    });
+}
+
+function renderStatistics(drives) {
+    const resultsContainer = document.getElementById('stats-results');
+    const zakelijkEl = document.getElementById('total-zakelijk');
+    const privateEl = document.getElementById('total-private');
+    const locationsList = document.getElementById('stats-locations-list');
+    const detailList = document.getElementById('stats-detail-list');
+
+    resultsContainer.classList.remove('hidden');
+
+    let totalZakelijk = 0;
+    let totalPrivate = 0;
+    const locationsMap = {};
+
+    detailList.innerHTML = '';
+
+    drives.forEach(drive => {
+        if (drive.type === 'Zakelijk') totalZakelijk += drive.distance;
+        else totalPrivate += drive.distance;
+
+        // Group by location
+        const key = `${drive.from} ➝ ${drive.to}`;
+        locationsMap[key] = (locationsMap[key] || 0) + drive.distance;
+
+        // Detail row
+        const row = document.createElement('div');
+        row.className = 'detail-row';
+        row.innerHTML = `
+            <span class="date">${formatDate(drive.date)}</span>
+            <span class="route">${drive.from} ➝ ${drive.to}</span>
+            <span class="dist">${drive.distance} km</span>
+        `;
+        detailList.appendChild(row);
+    });
+
+    zakelijkEl.textContent = totalZakelijk + ' km';
+    privateEl.textContent = totalPrivate + ' km';
+
+    // Render locations
+    locationsList.innerHTML = '';
+    Object.entries(locationsMap).sort((a, b) => b[1] - a[1]).forEach(([route, dist]) => {
+        const row = document.createElement('div');
+        row.className = 'stats-row';
+        row.innerHTML = `
+            <span class="loc">${route}</span>
+            <span class="dist">${dist} km</span>
+        `;
+        locationsList.appendChild(row);
+    });
+
+    // Store current stats for copying
+    state.currentStats = {
+        drives: drives,
+        locations: locationsMap,
+        totals: { zakelijk: totalZakelijk, private: totalPrivate }
+    };
+}
+
+function copyToClipboard(type) {
+    if (!state.currentStats) return;
+
+    let text = '';
+    if (type === 'stats-totals') {
+        text = `Type\tAfstand\nZakelijk\t${state.currentStats.totals.zakelijk} km\nPrivé\t${state.currentStats.totals.private} km`;
+    } else if (type === 'stats-locations') {
+        text = `Route\tAfstand\n`;
+        Object.entries(state.currentStats.locations).forEach(([route, dist]) => {
+            text += `${route}\t${dist} km\n`;
+        });
+    } else if (type === 'stats-detail-list') {
+        text = `Datum\tVan\tNaar\tType\tAfstand\tOmschrijving\n`;
+        state.currentStats.drives.forEach(d => {
+            text += `${d.date.split('T')[0]}\t${d.from}\t${d.to}\t${d.type}\t${d.distance}\t${d.description || ''}\n`;
+        });
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector(`[data-copy="${type}"]`);
+        const originalText = btn.textContent;
+        btn.textContent = 'Gekopieerd!';
+        setTimeout(() => btn.textContent = originalText, 2000);
     });
 }
 

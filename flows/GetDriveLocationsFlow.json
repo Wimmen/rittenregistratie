@@ -1,0 +1,59 @@
+{
+    "Id": null,
+    "Name": "GetDriveLocationsFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "get-locations-step",
+    "ErrorStepId": "error-to-user-step",
+    "Steps": {
+        "get-locations-step": {
+            "Id": "get-locations-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "WITH location_cte (locations) AS (SELECT FromLocation as Locations FROM [aaaaaaaa].[Drives] WHERE UserId = @UserId UNION ALL SELECT ToLocation as Locations FROM [aaaaaaaa].[Drives] WHERE UserId = @UserId) SELECT locations, count(1) AS count FROM location_cte GROUP BY locations ORDER BY count DESC",
+                "Parameters": {
+                    "UserId": "${principal.userId}"
+                }
+            },
+            "Alias": "DriveLocations",
+            "NextStepId": "send-list-step",
+            "AuthenticationId": 0
+        },
+        "send-list-step": {
+            "Id": "send-list-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "DriveLocationsList",
+                "Data": "${DriveLocations}"
+            },
+            "NextStepId": null
+        },
+        "error-to-user-step": {
+            "Id": "error-to-user-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "GetDriveLocationsFailed",
+                "Data": {
+                    "Message": "Failed to retrieve drives",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "GetDriveLocations",
+            "Version": "1.0",
+            "Status": "Active",
+            "Roles": [
+                "User"
+            ],
+            "Validation": []
+        }
+    ]
+}

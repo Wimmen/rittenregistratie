@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <div id="auth-overlay" class="auth-overlay hidden">
@@ -24,7 +26,12 @@
             <div class="header-content">
                 <h1>Rittenregistratie</h1>
                 <button id="logout-btn" class="btn-icon" aria-label="Uitloggen">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
                 </button>
             </div>
             <div class="connection-pill disconnected" id="connection-status">Verbinden...</div>
@@ -42,7 +49,7 @@
                     <div class="type-selector">
                         <input type="radio" name="type" id="type-business" value="Zakelijk" checked>
                         <label for="type-business" class="type-option">Zakelijk</label>
-                        
+
                         <input type="radio" name="type" id="type-private" value="Privé">
                         <label for="type-private" class="type-option">Privé</label>
                     </div>
@@ -50,14 +57,16 @@
                     <div class="card">
                         <div class="form-group">
                             <label for="from">Van</label>
-                            <input type="text" id="from" list="address-list" placeholder="Startadres" required autocomplete="off">
+                            <input type="text" id="from" list="address-list" placeholder="Startadres" required
+                                autocomplete="off">
                         </div>
-                        
+
                         <div class="timeline-connector"></div>
 
                         <div class="form-group">
                             <label for="to">Naar</label>
-                            <input type="text" id="to" list="address-list" placeholder="Bestemmingsadres" required autocomplete="off">
+                            <input type="text" id="to" list="address-list" placeholder="Bestemmingsadres" required
+                                autocomplete="off">
                         </div>
                     </div>
 
@@ -101,11 +110,78 @@
                 </form>
             </section>
 
-            <!-- Drives List -->
+            <!-- Drives List / History -->
             <section id="view-history" class="view">
-                <div id="drives-list" class="drives-list">
-                    <!-- Populated by JS -->
-                    <div class="empty-state">Geen recente ritten gevonden.</div>
+                <div class="history-tabs">
+                    <button class="history-tab active" data-tab="history-list">Recente Ritten</button>
+                    <button class="history-tab" data-tab="history-stats">Statistieken</button>
+                </div>
+
+                <div id="history-list" class="history-tab-content active">
+                    <div id="drives-list" class="drives-list">
+                        <!-- Populated by JS -->
+                        <div class="empty-state">Geen recente ritten gevonden.</div>
+                    </div>
+                </div>
+
+                <div id="history-stats" class="history-tab-content">
+                    <div class="stats-controls">
+                        <select id="stats-year"></select>
+                        <select id="stats-month">
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Maart</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8">Augustus</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <button id="load-stats-btn" class="btn btn-secondary">Toon</button>
+                    </div>
+
+                    <div id="stats-results" class="hidden">
+                        <div class="card stats-card">
+                            <div class="stats-header">
+                                <h4>Totalen</h4>
+                                <button class="btn-copy" data-copy="stats-totals">Kopiëren</button>
+                            </div>
+                            <div class="stats-totals-grid">
+                                <div class="total-item">
+                                    <span class="label">Zakelijk</span>
+                                    <span class="value" id="total-zakelijk">0 km</span>
+                                </div>
+                                <div class="total-item">
+                                    <span class="label">Privé</span>
+                                    <span class="value" id="total-private">0 km</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card stats-card">
+                            <div class="stats-header">
+                                <h4>Per Locatie</h4>
+                                <button class="btn-copy" data-copy="stats-locations">Kopiëren</button>
+                            </div>
+                            <div id="stats-locations-list" class="stats-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="card stats-card">
+                            <div class="stats-header">
+                                <h4>Alle Ritten</h4>
+                                <button class="btn-copy" data-copy="stats-detail-list">Kopiëren</button>
+                            </div>
+                            <div id="stats-detail-list" class="stats-list detail-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             <!-- Profile View -->
@@ -152,15 +228,32 @@
 
         <nav class="bottom-nav">
             <button class="nav-item active" data-target="view-new-drive">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
                 <span>Nieuw</span>
             </button>
             <button class="nav-item" data-target="view-history">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
                 <span>Geschiedenis</span>
             </button>
             <button class="nav-item" data-target="view-profile">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
                 <span>Profiel</span>
             </button>
         </nav>
@@ -168,4 +261,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
