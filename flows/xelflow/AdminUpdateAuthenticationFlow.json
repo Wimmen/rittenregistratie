@@ -63,15 +63,15 @@
             ],
             "Validation": [
                 {
-                    "Check": "${NOT(EMPTY(event.id))}",
+                    "Check": "${NOT(EMPTY(event.data.id))}",
                     "Message": "Authentication Id is required"
                 },
                 {
-                    "Check": "${NOT(EMPTY(event.name))}",
+                    "Check": "${NOT(EMPTY(event.data.name))}",
                     "Message": "Authentication name is required"
                 },
                 {
-                    "Check": "${NOT(EMPTY(event.type))}",
+                    "Check": "${NOT(EMPTY(event.data.type))}",
                     "Message": "Authentication type is required"
                 }
             ]

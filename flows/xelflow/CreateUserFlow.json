@@ -103,15 +103,15 @@
       "Status": "Active",
       "Validation": [
         {
-          "Check": "${NOT(EMPTY(event.Email))}",
+          "Check": "${NOT(EMPTY(event.data.Email))}",
           "Message": "Email is verplicht"
         },
         {
-          "Check": "${NOT(EMPTY(event.FirstName))}",
+          "Check": "${NOT(EMPTY(event.data.FirstName))}",
           "Message": "Voornaam is verplicht"
         },
         {
-          "Check": "${NOT(EMPTY(event.LastName))}",
+          "Check": "${NOT(EMPTY(event.data.LastName))}",
           "Message": "Achternaam is verplicht"
         },
         {

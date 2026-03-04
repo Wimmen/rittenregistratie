@@ -60,11 +60,11 @@
             ],
             "Validation": [
                 {
-                    "Check": "${NOT(EMPTY(event.brand))}",
+                    "Check": "${NOT(EMPTY(event.data.brand))}",
                     "Message": "Merk is verplicht"
                 },
                 {
-                    "Check": "${NOT(EMPTY(event.licensePlate))}",
+                    "Check": "${NOT(EMPTY(event.data.licensePlate))}",
                     "Message": "Kenteken is verplicht"
                 }
             ]

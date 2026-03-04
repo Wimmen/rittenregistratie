@@ -12,7 +12,7 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "WITH location_cte (locations) AS (SELECT FromLocation as Locations FROM [aaaaaaaa].[Drives] WHERE UserId = @UserId UNION ALL SELECT ToLocation as Locations FROM [aaaaaaaa].[Drives] WHERE UserId = @UserId) SELECT locations, count(1) AS count FROM location_cte GROUP BY locations ORDER BY count DESC",
+                "Query": "WITH location_cte (location) AS (SELECT FromLocation as location FROM [Drives] WHERE UserId = @UserId UNION ALL SELECT ToLocation as location FROM [Drives] WHERE UserId = @UserId) SELECT location, count(1) AS count FROM location_cte GROUP BY location ORDER BY count DESC",
                 "Parameters": {
                     "UserId": "${principal.userId}"
                 }

@@ -59,7 +59,7 @@
             ],
             "Validation": [
                 {
-                    "Check": "${NOT(EMPTY(event.id))}",
+                    "Check": "${NOT(EMPTY(event.data.id))}",
                     "Message": "Authentication Id is required"
                 }
             ]

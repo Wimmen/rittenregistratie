@@ -489,8 +489,8 @@ function setupForm() {
 
         // Timeout override if no response
         setTimeout(() => {
-            if (btn.disabled) {
-                btn.disabled = false;
+            if (saveBtn.disabled) {
+                saveBtn.disabled = false;
                 loader.classList.add('hidden');
                 // Don't reset text here, it depends on state
             }

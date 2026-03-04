@@ -58,7 +58,7 @@
             ],
             "Validation": [
                 {
-                    "Check": "${NOT(EMPTY(event.name))}",
+                    "Check": "${NOT(EMPTY(event.data.name))}",
                     "Message": "Role name is required"
                 }
             ]

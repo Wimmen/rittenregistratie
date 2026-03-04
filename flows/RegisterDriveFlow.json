@@ -65,19 +65,19 @@
             ],
             "Validation": [
                 {
-                    "Check": "${NOT(EMPTY(event.date))}",
+                    "Check": "${NOT(EMPTY(event.data.date))}",
                     "Message": "Datum is verplicht"
                 },
                 {
-                    "Check": "${NOT(EMPTY(event.from))}",
+                    "Check": "${NOT(EMPTY(event.data.from))}",
                     "Message": "Van is verplicht"
                 },
                 {
-                    "Check": "${NOT(EMPTY(event.to))}",
+                    "Check": "${NOT(EMPTY(event.data.to))}",
                     "Message": "Naar is verplicht"
                 },
                 {
-                    "Check": "${NOT(EMPTY(event.mileage))}",
+                    "Check": "${NOT(EMPTY(event.data.mileage))}",
                     "Message": "Kilometerstand is verplicht"
                 },
                 {
