@@ -15,7 +15,7 @@
             {
                 "Name": "Oid",
                 "Type": "nvarchar(50)",
-                "IsNullable": false
+                "IsNullable": true
             },
             {
                 "Name": "Email",

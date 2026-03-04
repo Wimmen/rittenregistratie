@@ -1,0 +1,77 @@
+{
+    "Id": null,
+    "Name": "AdminAddUserFlow",
+    "Version": "1.0",
+    "Status": "Active",
+    "StartStepId": "create-user-step",
+    "ErrorStepId": "error-step",
+    "Steps": {
+        "create-user-step": {
+            "Id": "create-user-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Insert",
+                "QueryTextType": "Text",
+                "Query": "INSERT INTO Users (FirstName, LastName, Email, LastLogin, Oid, Disabled) VALUES (@FirstName, @LastName, @Email, getDate(), NULL, 0)",
+                "Parameters": {
+                    "FirstName": "${event.data.firstName}",
+                    "LastName": "${event.data.lastName}",
+                    "Email": "${event.data.email}"
+                }
+            },
+            "Alias": "created",
+            "NextStepId": "send-success-step",
+            "AuthenticationId": 0
+        },
+        "send-success-step": {
+            "Id": "send-success-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminUserAdded",
+                "Data": {
+                    "Message": "User added successfully",
+                    "Email": "${event.data.email}"
+                }
+            },
+            "NextStepId": null
+        },
+        "error-step": {
+            "Id": "error-step",
+            "Type": "SendMessageToUser",
+            "Parameters": {
+                "Event": "AdminUserAddFailed",
+                "Data": {
+                    "Message": "Failed to add user",
+                    "Status": "Failed",
+                    "Error": "${error}"
+                }
+            },
+            "NextStepId": null
+        }
+    },
+    "Events": [
+        {
+            "Id": null,
+            "Name": "AdminAddUser",
+            "Version": "1.0",
+            "Status": "Active",
+            "Roles": [
+                "Admin"
+            ],
+            "Validation": [
+                {
+                    "Check": "${NOT(EMPTY(event.data.firstName))}",
+                    "Message": "Voornaam is verplicht"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.data.lastName))}",
+                    "Message": "Achternaam is verplicht"
+                },
+                {
+                    "Check": "${NOT(EMPTY(event.data.email))}",
+                    "Message": "Email is verplicht"
+                }
+            ]
+        }
+    ]
+}

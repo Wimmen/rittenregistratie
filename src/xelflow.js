@@ -171,6 +171,14 @@ function connectSSE() {
 
     eventSource.addEventListener('AdminUserUpdateFailed', (e) => alert('Update mislukt'));
 
+    eventSource.addEventListener('AdminUserAdded', (e) => {
+        alert('Gebruiker toegevoegd');
+        document.getElementById('user-modal').classList.add('hidden');
+        refreshCurrentView();
+    });
+
+    eventSource.addEventListener('AdminUserAddFailed', (e) => alert('Gebruiker toevoegen mislukt'));
+
     eventSource.addEventListener('AdminRoleAdded', (e) => {
         alert('Role toegevoegd');
         document.getElementById('role-modal').classList.add('hidden');
@@ -267,6 +275,9 @@ function setupNavigation() {
             refreshCurrentView();
         });
     });
+
+    // User Button
+    document.getElementById('add-user-btn').addEventListener('click', () => openUserModal());
 
     // Role Button
     document.getElementById('add-role-btn').addEventListener('click', () => openRoleModal());
@@ -535,16 +546,27 @@ function setupModal() {
     }
 
     document.getElementById('save-user-btn').addEventListener('click', async () => {
-        if (!state.currentUser) return;
-
+        const id = document.getElementById('user-modal-id')?.value;
+        const firstName = document.getElementById('edit-firstname')?.value;
+        const lastName = document.getElementById('edit-lastname')?.value;
+        const email = document.getElementById('edit-email')?.value;
         const roles = Array.from(document.getElementById('edit-roles').selectedOptions).map(o => o.value);
         const disabled = document.getElementById('edit-disabled').checked;
 
-        await sendEvent('AdminUpdateUser', {
-            id: state.currentUser.Id,
-            role: roles.join(', '), // Assuming single role string in DB or modify backend to handle array
-            disabled: disabled ? 1 : 0
-        });
+        if (id) {
+            await sendEvent('AdminUpdateUser', {
+                id: id,
+                role: roles.join(', '),
+                disabled: disabled ? 1 : 0
+            });
+        } else {
+            if (!firstName || !lastName || !email) return alert('Vul alle verplichte velden in');
+            await sendEvent('AdminAddUser', {
+                firstName,
+                lastName,
+                email
+            });
+        }
     });
 
     document.getElementById('save-role-btn').addEventListener('click', async () => {
@@ -573,32 +595,65 @@ function setupModal() {
     */
 }
 
-function openUserModal(user) {
+function openUserModal(user = null) {
     state.currentUser = user;
     const modal = document.getElementById('user-modal');
+    const title = document.getElementById('user-modal-title');
     const content = document.getElementById('user-detail-content');
 
-    content.innerHTML = `
-        <div class="form-group">
-            <label>Naam</label>
-            <input type="text" value="${user.FirstName} ${user.LastName}" disabled>
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="text" value="${user.Email}" disabled>
-        </div>
-        <div class="form-group">
-            <label>Rollen</label>
-            <select id="edit-roles" multiple style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
-                <option value="User" ${user.Roles.includes('User') ? 'selected' : ''}>User</option>
-                <option value="Admin" ${user.Roles.includes('Admin') ? 'selected' : ''}>Admin</option>
-            </select>
-        </div>
-        <div class="form-group" style="display: flex; align-items: center; gap: 12px;">
-            <input type="checkbox" id="edit-disabled" ${user.Disabled ? 'checked' : ''} style="width: auto;">
-            <label for="edit-disabled" style="margin: 0;">Gebruiker uitschakelen</label>
-        </div>
-    `;
+    if (user) {
+        title.textContent = 'Gebruiker Details';
+        content.innerHTML = `
+            <input type="hidden" id="user-modal-id" value="${user.Id}">
+            <div class="form-group">
+                <label>Naam</label>
+                <input type="text" id="edit-firstname" value="${user.FirstName} ${user.LastName}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" id="edit-email" value="${user.Email}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Rollen</label>
+                <select id="edit-roles" multiple style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+                    <option value="User" ${user.Roles && user.Roles.includes('User') ? 'selected' : ''}>User</option>
+                    <option value="Admin" ${user.Roles && user.Roles.includes('Admin') ? 'selected' : ''}>Admin</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" id="edit-disabled" ${user.Disabled ? 'checked' : ''} style="width: auto;">
+                <label for="edit-disabled" style="margin: 0;">Gebruiker uitschakelen</label>
+            </div>
+        `;
+    } else {
+        title.textContent = 'Gebruiker Toevoegen';
+        content.innerHTML = `
+            <div class="form-group">
+                <label for="edit-firstname">Voornaam</label>
+                <input type="text" id="edit-firstname" placeholder="Voornaam">
+            </div>
+            <div class="form-group">
+                <label for="edit-lastname">Achternaam</label>
+                <input type="text" id="edit-lastname" placeholder="Achternaam">
+            </div>
+            <div class="form-group">
+                <label for="edit-email">Email</label>
+                <input type="text" id="edit-email" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label>Rollen</label>
+                <select id="edit-roles" multiple style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border);" disabled>
+                    <option value="User" selected>User</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <small style="color: var(--text-secondary);">Rollen kunnen worden aangepast na creatie.</small>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" id="edit-disabled" style="width: auto;" disabled>
+                <label for="edit-disabled" style="margin: 0;">Gebruiker uitschakelen</label>
+            </div>
+        `;
+    }
 
     modal.classList.remove('hidden');
 }
