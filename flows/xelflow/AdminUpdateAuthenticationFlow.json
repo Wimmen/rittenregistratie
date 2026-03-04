@@ -15,10 +15,10 @@
                 "QueryTextType": "Text",
                 "Query": "UPDATE Authentications SET Name = @Name, Type = @Type, Parameters = @Parameters WHERE Id = @Id",
                 "Parameters": {
-                    "Name": "${event.name}",
-                    "Type": "${event.type}",
-                    "Parameters": "${event.parameters}",
-                    "Id": "${event.id}"
+                    "Name": "${event.data.name}",
+                    "Type": "${event.data.type}",
+                    "Parameters": "${event.data.parameters}",
+                    "Id": "${event.data.id}"
                 }
             },
             "Alias": "updated",
@@ -32,8 +32,8 @@
                 "Event": "AdminAuthenticationUpdated",
                 "Data": {
                     "Message": "Authentication updated successfully",
-                    "Id": "${event.id}",
-                    "Name": "${event.name}"
+                    "Id": "${event.data.id}",
+                    "Name": "${event.data.name}"
                 }
             },
             "NextStepId": null

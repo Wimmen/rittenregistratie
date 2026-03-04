@@ -14,9 +14,9 @@
                 "QueryTextType": "Text",
                 "Query": "UPDATE Users SET Role = @Role, Disabled = @Disabled WHERE Id = @Id",
                 "Parameters": {
-                    "Role": "${event.role}",
-                    "Disabled": "${event.disabled}",
-                    "Id": "${event.id}"
+                    "Role": "${event.data.role}",
+                    "Disabled": "${event.data.disabled}",
+                    "Id": "${event.data.id}"
                 }
             },
             "Alias": "updated",
@@ -30,7 +30,7 @@
                 "Event": "AdminUserUpdated",
                 "Data": {
                     "Message": "User updated successfully",
-                    "Id": "${event.id}"
+                    "Id": "${event.data.id}"
                 }
             },
             "NextStepId": null

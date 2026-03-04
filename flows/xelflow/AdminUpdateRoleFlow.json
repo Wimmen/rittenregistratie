@@ -14,8 +14,8 @@
                 "QueryTextType": "Text",
                 "Query": "UPDATE Roles SET Name = @Name WHERE Id = @Id",
                 "Parameters": {
-                    "Name": "${event.name}",
-                    "Id": "${event.id}"
+                    "Name": "${event.data.name}",
+                    "Id": "${event.data.id}"
                 }
             },
             "Alias": "updated",
@@ -29,8 +29,8 @@
                 "Event": "AdminRoleUpdated",
                 "Data": {
                     "Message": "Role updated successfully",
-                    "Id": "${event.id}",
-                    "Name": "${event.name}"
+                    "Id": "${event.data.id}",
+                    "Name": "${event.data.name}"
                 }
             },
             "NextStepId": null

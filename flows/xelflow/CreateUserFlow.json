@@ -41,9 +41,9 @@
         "QueryTextType": "Text",
         "Query": "INSERT INTO Users (FirstName, LastName, Email, LastLogin, Oid, Disabled) VALUES (@FirstName, @LastName, @Email, getDate(), @Oid, 0)",
         "Parameters": {
-          "FirstName": "${event.firstName}",
-          "LastName": "${event.lastName}",
-          "Email": "${event.email}",
+          "FirstName": "${event.data.firstName}",
+          "LastName": "${event.data.lastName}",
+          "Email": "${event.data.email}",
           "Oid": "${principal.userId}"
         }
       },
@@ -59,9 +59,9 @@
         "QueryTextType": "Text",
         "Query": "UPDATE Users SET FirstName = @FirstName, LastName = @LastName, Email = @Email, LastLogin = getDate() WHERE Oid = @Oid",
         "Parameters": {
-          "FirstName": "${event.firstName}",
-          "LastName": "${event.lastName}",
-          "Email": "${event.email}",
+          "FirstName": "${event.data.firstName}",
+          "LastName": "${event.data.lastName}",
+          "Email": "${event.data.email}",
           "Oid": "${principal.userId}"
         }
       },

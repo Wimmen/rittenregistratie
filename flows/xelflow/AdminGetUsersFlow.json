@@ -40,9 +40,9 @@
                     }
                 ],
                 "Parameters": {
-                    "Search": "%${event.search}%",
-                    "Offset": "${event.offset}",
-                    "Limit": "${event.limit}"
+                    "Search": "%${event.data.search}%",
+                    "Offset": "${event.data.offset}",
+                    "Limit": "${event.data.limit}"
                 }
             },
             "Alias": "users",
@@ -71,7 +71,7 @@
                     }
                 ],
                 "Parameters": {
-                    "Search": "%${event.search}%"
+                    "Search": "%${event.data.search}%"
                 }
             },
             "Alias": "count",
@@ -86,8 +86,8 @@
                 "Data": {
                     "Items": "${users}",
                     "Total": "${count.0.Total}",
-                    "Offset": "${event.offset}",
-                    "Limit": "${event.limit}"
+                    "Offset": "${event.data.offset}",
+                    "Limit": "${event.data.limit}"
                 }
             },
             "NextStepId": null

@@ -14,15 +14,15 @@
                 "QueryTextType": "Text",
                 "Query": "UPDATE Drives SET DriveDate = @DriveDate, FromLocation = @FromLocation, ToLocation = @ToLocation, Mileage = @Mileage, Distance = @Distance, Type = @Type, Description = @Description WHERE Id = @Id AND UserId = @UserId",
                 "Parameters": {
-                    "Id": "${event.id}",
-                    "DriveDate": "${event.date}",
-                    "FromLocation": "${event.from}",
-                    "ToLocation": "${event.to}",
-                    "Mileage": "${event.mileage}",
-                    "Distance": "${event.distance}",
-                    "Type": "${event.type}",
+                    "Id": "${event.data.id}",
+                    "DriveDate": "${event.data.date}",
+                    "FromLocation": "${event.data.from}",
+                    "ToLocation": "${event.data.to}",
+                    "Mileage": "${event.data.mileage}",
+                    "Distance": "${event.data.distance}",
+                    "Type": "${event.data.type}",
                     "UserId": "${principal.userId}",
-                    "Description": "${event.description}"
+                    "Description": "${event.data.description}"
                 }
             },
             "Alias": "DriveUpdated",

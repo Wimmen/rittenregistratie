@@ -15,8 +15,8 @@
                 "Query": "IF EXISTS (SELECT 1 FROM Cars WHERE UserId = @UserId) UPDATE Cars SET Brand = @Brand, LicensePlate = @LicensePlate WHERE UserId = @UserId ELSE INSERT INTO Cars (UserId, Brand, LicensePlate) VALUES (@UserId, @Brand, @LicensePlate)",
                 "Parameters": {
                     "UserId": "${principal.userId}",
-                    "Brand": "${event.brand}",
-                    "LicensePlate": "${event.licensePlate}"
+                    "Brand": "${event.data.brand}",
+                    "LicensePlate": "${event.data.licensePlate}"
                 }
             },
             "Alias": "CarSaved",

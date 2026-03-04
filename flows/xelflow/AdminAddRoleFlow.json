@@ -14,7 +14,7 @@
                 "QueryTextType": "Text",
                 "Query": "INSERT INTO Roles (Name) VALUES (@Name)",
                 "Parameters": {
-                    "Name": "${event.name}"
+                    "Name": "${event.data.name}"
                 }
             },
             "Alias": "created",
@@ -28,7 +28,7 @@
                 "Event": "AdminRoleAdded",
                 "Data": {
                     "Message": "Role added successfully",
-                    "Name": "${event.name}"
+                    "Name": "${event.data.name}"
                 }
             },
             "NextStepId": null

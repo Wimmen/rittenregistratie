@@ -15,9 +15,9 @@
                 "QueryTextType": "Text",
                 "Query": "INSERT INTO Authentications (Name, Type, Parameters) VALUES (@Name, @Type, @Parameters)",
                 "Parameters": {
-                    "Name": "${event.name}",
-                    "Type": "${event.type}",
-                    "Parameters": "${event.parameters}"
+                    "Name": "${event.data.name}",
+                    "Type": "${event.data.type}",
+                    "Parameters": "${event.data.parameters}"
                 }
             },
             "Alias": "created",
@@ -31,7 +31,7 @@
                 "Event": "AdminAuthenticationAdded",
                 "Data": {
                     "Message": "Authentication added successfully",
-                    "Name": "${event.name}"
+                    "Name": "${event.data.name}"
                 }
             },
             "NextStepId": null

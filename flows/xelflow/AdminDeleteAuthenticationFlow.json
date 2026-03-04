@@ -15,7 +15,7 @@
                 "QueryTextType": "Text",
                 "Query": "DELETE FROM Authentications WHERE Id = @Id",
                 "Parameters": {
-                    "Id": "${event.id}"
+                    "Id": "${event.data.id}"
                 }
             },
             "Alias": "deleted",
@@ -29,7 +29,7 @@
                 "Event": "AdminAuthenticationDeleted",
                 "Data": {
                     "Message": "Authentication deleted successfully",
-                    "Id": "${event.id}"
+                    "Id": "${event.data.id}"
                 }
             },
             "NextStepId": null
