@@ -27,4 +27,5 @@ This directory contains Flow definitions in JSON format. Flows define the busine
 
 ## Syncing
 
-- Run `npm run sync` in the root to apply changes to the database.
+- Run `npm run sync-flows` in the root to apply changes to the database.
+- Run `npm run sync-flows changed` in the root to apply only changed flows to the database.
