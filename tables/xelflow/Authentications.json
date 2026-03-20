@@ -3,31 +3,28 @@
     "Version": "1.0",
     "Status": "Active",
     "Description": "Authentications table",
-    "Table": {
-        "Name": "Authentications",
-        "Columns": [
-            {
-                "Name": "Id",
-                "Type": "int",
-                "IsPrimaryKey": true,
-                "IsNullable": false
-            },
-            {
-                "Name": "Name",
-                "Type": "nvarchar(50)",
-                "IsNullable": false
-            },
-            {
-                "Name": "Type",
-                "Type": "nvarchar(20)",
-                "IsNullable": false,
-                "AllowedValues": ["SqlServer", "Smtp", "Http", "AzureServiceBus", "Notification"]
-            },
-            {
-                "Name": "Parameters",
-                "Type": "nvarchar(max)",
-                "IsNullable": true
-            }
-        ]
-    }
+    "Columns": [
+        {
+            "Name": "Id",
+            "Type": "int",
+            "IsPrimaryKey": true,
+            "IsNullable": false
+        },
+        {
+            "Name": "Name",
+            "Type": "nvarchar(50)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Type",
+            "Type": "nvarchar(20)",
+            "IsNullable": false,
+            "AllowedValues": ["SqlServer", "Smtp", "Http", "AzureServiceBus", "Notification"]
+        },
+        {
+            "Name": "Parameters",
+            "Type": "nvarchar(max)",
+            "IsNullable": true
+        }
+    ]
 }

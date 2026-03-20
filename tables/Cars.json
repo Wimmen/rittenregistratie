@@ -3,30 +3,27 @@
     "Version": "1.0",
     "Status": "Active",
     "Description": "Cars table",
-    "Table": {
-        "Name": "Cars",
-        "Columns": [
-            {
-                "Name": "Id",
-                "Type": "int",
-                "IsPrimaryKey": true,
-                "IsIdentity": true
-            },
-            {
-                "Name": "UserId",
-                "Type": "varchar(255)",
-                "IsNullable": false
-            },
-            {
-                "Name": "Brand",
-                "Type": "varchar(255)",
-                "IsNullable": true
-            },
-            {
-                "Name": "LicensePlate",
-                "Type": "varchar(50)",
-                "IsNullable": true
-            }
-        ]
-    }
+    "Columns": [
+        {
+            "Name": "Id",
+            "Type": "int",
+            "IsPrimaryKey": true,
+            "IsIdentity": true
+        },
+        {
+            "Name": "UserId",
+            "Type": "varchar(255)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Brand",
+            "Type": "varchar(255)",
+            "IsNullable": true
+        },
+        {
+            "Name": "LicensePlate",
+            "Type": "varchar(50)",
+            "IsNullable": true
+        }
+    ]
 }

@@ -3,44 +3,41 @@
     "Version": "1.0",
     "Status": "Active",
     "Description": "Events table",
-    "Table": {
-        "Name": "Events",
-        "Columns": [
-            {
-                "Name": "Id",
-                "Type": "int",
-                "IsPrimaryKey": true,
-                "IsIdentity": true
-            },
-            {
-                "Name": "FlowId",
-                "Type": "int",
-                "IsNullable": false,
-                "ForeignKey": {
-                    "Table": "Flows",
-                    "Column": "Id"
-                }
-            },
-            {
-                "Name": "Name",
-                "Type": "nvarchar(250)",
-                "IsNullable": false
-            },
-            {
-                "Name": "Version",
-                "Type": "nvarchar(50)",
-                "IsNullable": false
-            },
-            {
-                "Name": "Status",
-                "Type": "nvarchar(50)",
-                "IsNullable": false
-            },
-            {
-                "Name": "Validation",
-                "Type": "nvarchar(max)",
-                "IsNullable": true
+    "Columns": [
+        {
+            "Name": "Id",
+            "Type": "int",
+            "IsPrimaryKey": true,
+            "IsIdentity": true
+        },
+        {
+            "Name": "FlowId",
+            "Type": "int",
+            "IsNullable": false,
+            "ForeignKey": {
+                "Table": "Flows",
+                "Column": "Id"
             }
-        ]
-    }
+        },
+        {
+            "Name": "Name",
+            "Type": "nvarchar(250)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Version",
+            "Type": "nvarchar(50)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Status",
+            "Type": "nvarchar(50)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Validation",
+            "Type": "nvarchar(max)",
+            "IsNullable": true
+        }
+    ]
 }

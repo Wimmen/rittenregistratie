@@ -3,40 +3,37 @@
     "Version": "1.0",
     "Status": "Active",
     "Description": "Migrations table",
-    "Table": {
-        "Name": "Migrations",
-        "Columns": [
-            {
-                "Name": "Id",
-                "Type": "int",
-                "IsPrimaryKey": true,
-                "IsIdentity": true
-            },
-            {
-                "Name": "Name",
-                "Type": "nvarchar(100)",
-                "IsNullable": false
-            },
-            {
-                "Name": "Query",
-                "Type": "nvarchar(max)",
-                "IsNullable": false
-            },
-            {
-                "Name": "UserId",
-                "Type": "int",
-                "IsNullable": false,
-                "ForeignKey": {
-                    "Table": "Users",
-                    "Column": "Id"
-                }
-            },
-            {
-                "Name": "ExecutedAt",
-                "Type": "datetime",
-                "IsNullable": false,
-                "DefaultValue": "SYSUTCDATETIME()"
+    "Columns": [
+        {
+            "Name": "Id",
+            "Type": "int",
+            "IsPrimaryKey": true,
+            "IsIdentity": true
+        },
+        {
+            "Name": "Name",
+            "Type": "nvarchar(100)",
+            "IsNullable": false
+        },
+        {
+            "Name": "Query",
+            "Type": "nvarchar(max)",
+            "IsNullable": false
+        },
+        {
+            "Name": "UserId",
+            "Type": "int",
+            "IsNullable": false,
+            "ForeignKey": {
+                "Table": "Users",
+                "Column": "Id"
             }
-        ]
-    }
+        },
+        {
+            "Name": "ExecutedAt",
+            "Type": "datetime",
+            "IsNullable": false,
+            "DefaultValue": "SYSUTCDATETIME()"
+        }
+    ]
 }
