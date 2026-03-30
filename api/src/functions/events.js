@@ -12,6 +12,12 @@ app.http('events', {
   // Haal SWA identity header op
   const principalHeader = req.headers.get("x-ms-client-principal");
   context.log(`Principal header aanwezig: ${!!principalHeader}`);
+  const referer = req.headers.get("referer");
+  context.log(`Referer: ${referer}`);
+  const ip = req.headers.get("x-forwarded-for");
+  context.log(`IP: ${ip}`);
+  const userAgent = req.headers.get("user-agent");
+  context.log(`User Agent: ${userAgent}`);
 
   // Haal API-key op (vanuit client of SWA config)
   const apiKey = process.env.XELFLOW_API_KEY;
@@ -23,7 +29,10 @@ app.http('events', {
 
   // Bouw headers voor de externe API
   const headers = {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Referer": referer,
+    "X-Forwarded-For": ip,
+    "User-Agent": userAgent
   };
 
   if (principalHeader) {
