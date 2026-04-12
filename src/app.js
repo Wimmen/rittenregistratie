@@ -463,7 +463,6 @@ function setupForm() {
         loader.classList.remove('hidden');
 
         const currentMileage = parseInt(currentMileageInput.value) || 0;
-        const dist = currentMileage - state.lastMileage;
 
         const payload = {
             id: state.editingId, // Include ID if editing
@@ -472,20 +471,13 @@ function setupForm() {
             from: document.getElementById('from').value,
             to: document.getElementById('to').value,
             mileage: currentMileage,
-            distance: dist,
             description: document.getElementById('description').value
         };
 
         const eventName = state.editingId ? 'UpdateDrive' : 'RegisterDrive';
         await sendEvent(eventName, payload);
 
-        if (state.editingIndex) {
-            const nextDrive = state.sortedDrives[state.editingIndex - 1];
-            if (nextDrive) {
-                nextDrive.distance = nextDrive.mileage - currentMileage;
-                await sendEvent('UpdateDrive', nextDrive);
-            }
-        }
+
 
         // Timeout override if no response
         setTimeout(() => {

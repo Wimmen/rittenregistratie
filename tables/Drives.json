@@ -41,11 +41,6 @@
             "IsNullable": false
         },
         {
-            "Name": "Distance",
-            "Type": "int",
-            "IsNullable": false
-        },
-        {
             "Name": "Description",
             "Type": "nvarchar(max)",
             "IsNullable": true

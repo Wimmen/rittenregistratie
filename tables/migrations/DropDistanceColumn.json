@@ -1,0 +1,6 @@
+{
+    "Name": "DropDistanceColumn",
+    "Scripts": [
+        "ALTER TABLE Drives DROP COLUMN Distance"
+    ]
+}

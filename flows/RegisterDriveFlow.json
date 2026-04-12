@@ -12,13 +12,12 @@
             "Parameters": {
                 "QueryType": "Insert",
                 "QueryTextType": "Text",
-                "Query": "INSERT INTO Drives (DriveDate, FromLocation, ToLocation, Mileage, Distance, Type, UserId, Description, CreatedAt) VALUES (@DriveDate, @FromLocation, @ToLocation, @Mileage, @Distance, @Type, @UserId, @Description, getDate())",
+                "Query": "INSERT INTO Drives (DriveDate, FromLocation, ToLocation, Mileage, Type, UserId, Description, CreatedAt) VALUES (@DriveDate, @FromLocation, @ToLocation, @Mileage, @Type, @UserId, @Description, getDate())",
                 "Parameters": {
                     "DriveDate": "${event.data.date}",
                     "FromLocation": "${event.data.from}",
                     "ToLocation": "${event.data.to}",
                     "Mileage": "${event.data.mileage}",
-                    "Distance": "${event.data.distance}",
                     "Type": "${event.data.type}",
                     "UserId": "${principal.userId}",
                     "Description": "${event.data.description}"
