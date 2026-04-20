@@ -12,7 +12,8 @@ let state = {
     connected: false,
     editingId: null,
     editingIndex: null,
-    car: { brand: '', licensePlate: '' }
+    car: { brand: '', licensePlate: '' },
+    deferredPrompt: null
 };
 
 // Constants
@@ -50,6 +51,7 @@ const carLicenseInput = document.getElementById('car-license');
 // Init
 async function init() {
     registerServiceWorker();
+    setupPWAInstall();
     setupNavigation();
     setupForm();
     await checkAuth();
@@ -64,6 +66,58 @@ function registerServiceWorker() {
                 .catch(err => console.log('SW Failed', err));
         });
     }
+}
+
+// PWA Install
+function setupPWAInstall() {
+    const installPopup = document.getElementById('install-popup');
+    const installConfirmBtn = document.getElementById('install-confirm-btn');
+    const installLaterBtn = document.getElementById('install-later-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        state.deferredPrompt = e;
+
+        // Check if user dismissed it recently
+        const lastDismissed = localStorage.getItem('install-dismissed');
+        const now = new Date().getTime();
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+        if (!lastDismissed || (now - parseInt(lastDismissed) > sevenDays)) {
+            // Show the custom install popup
+            setTimeout(() => {
+                installPopup.classList.remove('hidden');
+            }, 1000); // Delay for better UX
+        }
+    });
+
+    installConfirmBtn.addEventListener('click', async () => {
+        if (!state.deferredPrompt) return;
+
+        // Hide the popup
+        installPopup.classList.add('hidden');
+        // Show the install prompt
+        state.deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await state.deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // We've used the prompt, and can't use it again, throw it away
+        state.deferredPrompt = null;
+    });
+
+    installLaterBtn.addEventListener('click', () => {
+        installPopup.classList.add('hidden');
+        // Save the timestamp of dismissal
+        localStorage.setItem('install-dismissed', new Date().getTime().toString());
+    });
+
+    window.addEventListener('appinstalled', (event) => {
+        console.log('App was installed.');
+        installPopup.classList.add('hidden');
+        state.deferredPrompt = null;
+    });
 }
 
 // Authentication

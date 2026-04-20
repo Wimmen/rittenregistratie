@@ -555,3 +555,115 @@ textarea {
 .detail-row .date { color: var(--text-muted); }
 .detail-row .route { font-weight: 500; }
 .detail-row .dist { text-align: right; font-weight: 600; }
+
+/* PWA Install Popup */
+.install-popup {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 2000;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.install-popup.hidden {
+    display: none !important;
+}
+
+.install-content {
+    background: var(--bg-card);
+    padding: 16px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.install-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.install-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.install-text {
+    flex: 1;
+}
+
+.install-text h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.install-text p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.install-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.btn-text-only {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.btn-text-only:hover {
+    color: var(--text-main);
+}
+
+@media (max-width: 480px) {
+    .install-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+    
+    .install-actions {
+        width: 100%;
+        margin-top: 12px;
+        flex-direction: column;
+    }
+
+    .install-actions .btn {
+        width: 100%;
+    }
+}
