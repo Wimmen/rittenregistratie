@@ -276,21 +276,21 @@ function connectSSE() {
         try {
             const data = JSON.parse(e.data);
             handleRecentDrives(data);
-        } catch (err) { console.error('Error parsing RecentDrivesList', err); }
+        } catch (err) { alert('Error parsing RecentDrivesList:' + err); }
     });
 
     eventSource.addEventListener('DriveLocationsList', (e) => {
         try {
             const data = JSON.parse(e.data);
             handleDriveLocations(data);
-        } catch (err) { console.error('Error parsing DriveLocationsList', err); }
+        } catch (err) { alert('Error parsing DriveLocationsList:' + err); }
     });
 
     eventSource.addEventListener('StatisticsList', (e) => {
         try {
             const data = JSON.parse(e.data);
             renderStatistics(data);
-        } catch (err) { console.error('Error parsing StatisticsList', err); }
+        } catch (err) { alert('Error parsing StatisticsList:' + err); }
     });
 
 
@@ -562,7 +562,7 @@ async function sendEvent(eventName, data) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-    });
+    }).catch(err => alert('Error sending event:' + err));
 }
 
 // Profile & User Logic
