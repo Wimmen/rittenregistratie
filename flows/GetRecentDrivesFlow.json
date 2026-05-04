@@ -12,9 +12,11 @@
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "SELECT TOP 20 Id as id, DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Mileage - LAG(Mileage, 1, 0) OVER (PARTITION BY UserId ORDER BY Mileage ASC) as distance, Type as type, Description as description FROM Drives WHERE UserId = @UserId ORDER BY Mileage DESC",
+                "Query": "SELECT Id as id, DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Mileage - LAG(Mileage, 1, 0) OVER (PARTITION BY UserId ORDER BY Mileage ASC) as distance, Type as type, Description as description FROM Drives WHERE UserId = @UserId ORDER BY Mileage DESC OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY",
                 "Parameters": {
-                    "UserId": "${principal.userId}"
+                    "UserId": "${principal.userId}",
+                    "Offset": "${COALESCE(event.data.Offset, 0)}",
+                    "Limit": "${COALESCE(event.data.Limit, 20)}"
                 }
             },
             "Alias": "RecentDrives",

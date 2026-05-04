@@ -6,14 +6,14 @@ let state = {
     principal: null,
     connectionId: null,
     lastMileage: 0,
-    recentDrives: [],
     sortedDrives: [],
     addresses: new Set(),
     connected: false,
     editingId: null,
     editingIndex: null,
     car: { brand: '', licensePlate: '' },
-    deferredPrompt: null
+    deferredPrompt: null,
+    loadingMoreDrives: false
 };
 
 // Constants
@@ -28,6 +28,7 @@ const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const resetBtn = document.getElementById('reset-btn');
 const saveBtn = document.getElementById('save-btn');
+const moreBtn = document.getElementById('more-btn');
 const connectionStatus = document.getElementById('connection-status');
 const navItems = document.querySelectorAll('.nav-item');
 const views = document.querySelectorAll('.view');
@@ -182,6 +183,26 @@ async function initConnection() {
 resetBtn.addEventListener('click', () => {
     resetForm();
 });
+
+moreBtn.addEventListener('click', () => {
+    loadMoreDrives();
+});
+
+function loadMoreDrives() {
+    // Load more drives
+    if (state.loadingMoreDrives) {
+        return;
+    }
+    moreBtn.disabled = true;
+    moreBtn.textContent = 'Laden...';
+    state.loadingMoreDrives = true;
+    const offset = state.sortedDrives.length;
+    const limit = 20;
+    sendEvent('GetRecentDrives', {
+        Offset: offset,
+        Limit: limit
+    });
+}
 
 loginBtn.addEventListener('click', () => {
     window.location.href = `/.auth/login/aad?post_login_redirect_url=${encodeURIComponent(window.location.href)}`;
@@ -393,12 +414,22 @@ function handleDriveLocations(locations) {
 }
 
 function handleRecentDrives(drives) {
-    state.recentDrives = drives || [];
-
-    // Find last mileage
-    // Assuming drives are ordered or we sort them. 
-    // Let's sort by date/mileage desc just in case
-    state.sortedDrives = [...state.recentDrives].sort((a, b) => b.mileage - a.mileage);
+    if (state.loadingMoreDrives) {
+        if (drives.length < 20) {
+            moreBtn.disabled = true;
+            moreBtn.textContent = 'Geen meer ritten';
+            state.loadingMoreDrives = false;
+        } else {
+            moreBtn.disabled = false;
+            moreBtn.textContent = 'Meer ritten';
+            state.loadingMoreDrives = false;
+        }
+        state.sortedDrives = [...state.sortedDrives, ...drives];
+    } else {
+        moreBtn.disabled = false;
+        moreBtn.textContent = 'Meer ritten';
+        state.sortedDrives = drives || [];
+    }
 
     if (state.sortedDrives.length > 0) {
         state.lastMileage = state.sortedDrives[0].mileage;

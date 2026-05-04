@@ -3,20 +3,38 @@
     "Name": "GetStatisticsFlow",
     "Version": "1.0",
     "Status": "Active",
-    "StartStepId": "get-stats-step",
+    "StartStepId": "get-start-distance-step",
     "ErrorStepId": "error-to-user-step",
     "Steps": {
+        "get-start-distance-step": {
+            "Id": "get-start-distance-step",
+            "Type": "QueryDatabase",
+            "Parameters": {
+                "QueryType": "Select",
+                "QueryTextType": "Text",
+                "Query": "SELECT Top 1 Mileage as StartDistance FROM Drives WHERE UserId = @UserId AND DriveDate < DATEFROMPARTS(@Year, @Month, 1) ORDER BY Mileage DESC",
+                "Parameters": {
+                    "UserId": "${principal.userId}",
+                    "Year": "${event.data.Year}",
+                    "Month": "${event.data.Month}"
+                }
+            },
+            "Alias": "StartDistance",
+            "NextStepId": "get-stats-step",
+            "AuthenticationId": 0
+        },
         "get-stats-step": {
             "Id": "get-stats-step",
             "Type": "QueryDatabase",
             "Parameters": {
                 "QueryType": "Select",
                 "QueryTextType": "Text",
-                "Query": "SELECT Id as id, DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Mileage - LAG(Mileage, 1, Mileage) OVER (PARTITION BY UserId ORDER BY Mileage ASC) as distance, Type as type, Description as description FROM Drives WHERE UserId = @UserId AND YEAR(DriveDate) = @Year AND MONTH(DriveDate) = @Month ORDER BY DriveDate ASC, Mileage ASC",
+                "Query": "SELECT Id as id, DriveDate as date, FromLocation as [from], ToLocation as [to], Mileage as mileage, Mileage - LAG(Mileage, 1, @StartDistance) OVER (PARTITION BY UserId ORDER BY Mileage ASC) as distance, Type as type, Description as description FROM Drives WHERE UserId = @UserId AND YEAR(DriveDate) = @Year AND MONTH(DriveDate) = @Month ORDER BY DriveDate ASC, Mileage ASC",
                 "Parameters": {
                     "UserId": "${principal.userId}",
                     "Year": "${event.data.Year}",
-                    "Month": "${event.data.Month}"
+                    "Month": "${event.data.Month}",
+                    "StartDistance": "${COALESCE(StartDistance.0.StartDistance, 0)}"
                 }
             },
             "Alias": "Statistics",
